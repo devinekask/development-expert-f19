@@ -75,3 +75,27 @@ The same schematic looks like this in an illustrated preview:
 We could get our hands dirty with a soldering iron, and melt wires and components together, but this would be a pretty slow prototyping / testing proces. Instead of that, we'll use a breadboard.
 
 Breadboards make it easier to prototype electronic circuits. Make sure to [read the chapter "Anatomy of a breadboard" on the Sparkfun website](https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard/#anatomy-of-a-breadboard) before continuing.
+
+Build the circuit below using a breadboard and test the Blink example again. The LED should turn on and off.
+
+![preview of the led with breadboard wiring](led-basic-breadboard-preview.png)
+
+If it doesn't, check the following potential issues:
+
+- The long connector from the LED should be connected to pin 13.
+- The resistor should have a value below 1000 Ohms (1 KOhm). Resistance values can be read using the colored stripes on them (see [resistor-calculator.com](http://www.resistor-calculator.com/)). The one in the picture is a 220 Ohm resistor.
+
+## Arduino Basic Tutorials
+
+Go through the following tutorials from the Arduino website to get yourself familiar with common components. Do not copy / paste the code without reading what the code does step by step.
+
+1. [Reading a button value](https://www.arduino.cc/en/Tutorial/DigitalReadSerial)
+2. [Turn an LED on / off using a button](https://www.arduino.cc/en/Tutorial/Button)
+3. [Debouncing button input](https://www.arduino.cc/en/Tutorial/Debounce)
+4. [Reading a potentiometer value](https://www.arduino.cc/en/Tutorial/AnalogReadSerial)
+5. [Fading an LED](https://www.arduino.cc/en/Tutorial/Fading)
+6. [Fading an LED using a potentiometer](https://www.arduino.cc/en/Tutorial/AnalogInOutSerial)
+7. [Reading input from a photocell](https://learn.sparkfun.com/tutorials/photocell-hookup-guide)
+8. [Using an ultrasonic distance sensor](https://www.arduino.cc/en/Tutorial/Ping)
+9. [Controlling a Servo motor](https://www.arduino.cc/en/Tutorial/Sweep)
+10. [Using a potentiometer to control a Servo](https://www.arduino.cc/en/Tutorial/Knob)
