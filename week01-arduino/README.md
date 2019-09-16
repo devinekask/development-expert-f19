@@ -44,3 +44,34 @@ Take a look at the code from this example. The language you write Arduino code i
 - `digitalWrite`: We use this function to write a binary value (HIGH or LOW) to a given pin number.
 - `delay`: This function pauses the execution of the program for a given amount of time in milliseconds.
 
+## A first electrical circuit
+
+Let's spice things up a little bit. Instead of blinking the on board LED, we'll connect a real LED to the Arduino.
+
+To make an LED light up, it'll need electricity running through it. That electric current needs to flow from somewhere to a destination. Just like water in a rivier, it will flow from a high potential to a low potential. You'll need to be careful about the amount of current flows through the LED at any given time. Just like with the river analogy, too much current / pressure might destroy a component (our LED). We will add a resistor to our circuit, to limit the current.
+
+We've used a couple of terms in the paragraph above, which are expressed in different units:
+
+- Voltage (V): the difference between the high and low potential in a circuit, expressed in Volts.
+- Current (I): the amount of current flowing in a circuit, expressed in Ampere.
+- Resistance (R): a resistance in a circuit, expressed in Ohms.
+
+There is a close connection between these 3, expressed in Ohm's law. As you can read on the [Wikipedia page on Ohm's law](https://en.wikipedia.org/wiki/Ohm's_law): "Ohm's law states that the current through a conductor between two points is directly proportional to the voltage across the two points."
+
+![I = V / R](http://www.sciweavers.org/tex2img.php?eq=I%20%3D%20%5Cfrac%7BV%7D%7BR%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+
+Where I stands for current, V for voltage and R for resistance.
+
+### An LED in a circuit
+
+When we want to connect an LED to an Arduino, the schematic would look something like this:
+
+![schematic view of led connected to an Arduino](led-basic-wires-schematic.png)
+
+The same schematic looks like this in an illustrated preview:
+
+![preview of led connected to an Arduino](led-basic-wires-preview.png)
+
+We could get our hands dirty with a soldering iron, and melt wires and components together, but this would be a pretty slow prototyping / testing proces. Instead of that, we'll use a breadboard.
+
+Breadboards make it easier to prototype electronic circuits. Make sure to [read the chapter "Anatomy of a breadboard" on the Sparkfun website](https://learn.sparkfun.com/tutorials/how-to-use-a-breadboard/#anatomy-of-a-breadboard) before continuing.
