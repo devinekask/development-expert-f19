@@ -117,3 +117,37 @@ You can combine multiple power sources. Make sure the components get the right v
 ![a 5v and 9v power source in a circuit](5v-servos-9v-arduino.png)
 
 ### Transistors
+
+A transistor allows you to amplify or switch an electrical signal. You can use this to control a circuit that's carrying a higher voltage or higher current from your Arduino.
+
+The 3 connectors from a transistor are called Emitter, Base and Collector. There are 2 types of transistors: NPN and PNP transistors. You can use both of these types as switches or amplifiers, the difference exists in the way you connect their pins.
+
+#### NPN Transistor
+
+You can switch an NPN transistor by applying a positive voltage to the base bin. Current will flow from Collector to Emitter:
+
+![npn transitor](npn.png)
+
+#### PNP Transistor
+
+A PNP transistor switches when you apply a lower voltage to the Base pin compared with the Emitter pin. Current will flow from Emitter to Collector:
+
+![pnp transistor](pnp.png)
+
+#### Control a 5V LED with an NPN transistor
+
+As a first test, we'll control a led using a transistor. This might seem overkill, but it's a good start, without much risk of damaging our components.
+
+The transistor in your kit is a small black block with a straight side and a curved side. The type number is printed on the block, we'll be using a PN222A transistor, which is an NPN transistor:
+
+![npn transitor pins](npn-pins.png)
+
+Double check the type number on the component. Lookup the pinout of the base, collector and emitter in case it's not a PN222A.
+
+Create the circuit as shown in the illustration below. The led gets its power from the 5V pin on the Arduino. By switching the transistor from pin 13, current will flow from the LED to GND. Test the circuit using the blink example code.
+
+![circuit controlling led with npn transistor](npn-led.png)
+
+#### Control a DC motor using an NPN transistor
+
+Next up you'll control a DC motor using the same PN222A NPN-transistor.
