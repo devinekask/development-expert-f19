@@ -48,7 +48,7 @@ Take a look at the code from this example. The language you write Arduino code i
 
 Let's spice things up a little bit. Instead of blinking the on board LED, we'll connect a real LED to the Arduino.
 
-To make an LED light up, it'll need electricity running through it. That electric current needs to flow from somewhere to a destination. Just like water in a rivier, it will flow from a high potential to a low potential. You'll need to be careful about the amount of current flows through the LED at any given time. Just like with the river analogy, too much current / pressure might destroy a component (our LED). We will add a resistor to our circuit, to limit the current.
+To make an LED light up, it'll need electricity running through it. That electric current needs to flow from somewhere to a destination. Just like water in a rivier, it will flow from a high potential to a low potential. You'll need to be careful about the amount of current flowing through the LED at any given time. Just like with the river analogy, too much current / pressure might destroy a component (our LED). We will add a resistor to our circuit, to limit the current.
 
 We've used a couple of terms in the paragraph above, which are expressed in different units:
 
@@ -87,7 +87,7 @@ If it doesn't, check the following potential issues:
 
 ## Arduino Basic Tutorials
 
-Go through the following tutorials from the Arduino website to get yourself familiar with common components. Do not copy / paste the code without reading what the code does step by step.
+Go through the following tutorials from the Arduino website to get yourself familiar with common components. Do not copy / paste the code without reading and understanding what the code does step by step.
 
 1. [Reading a button value](https://www.arduino.cc/en/Tutorial/DigitalReadSerial)
 2. [Turn an LED on / off using a button](https://www.arduino.cc/en/Tutorial/Button)
@@ -99,3 +99,21 @@ Go through the following tutorials from the Arduino website to get yourself fami
 8. [Using an ultrasonic distance sensor](https://www.arduino.cc/en/Tutorial/Ping)
 9. [Controlling a Servo motor](https://www.arduino.cc/en/Tutorial/Sweep)
 10. [Using a potentiometer to control a Servo](https://www.arduino.cc/en/Tutorial/Knob)
+
+### Powering an Arduino circuit
+
+Right now, you've been powering the Arduino circuit from your USB port, supplying the Arduino with a steady 5V. This is fine for running circuits using a couple of basic components such as a single LED or one servo. However, once you start expanding your circuits, the power from your USB port might not suffice. This is when external power sources come in play.
+
+An Arduino remembers the last sketch that was uploaded to it. As soon as it receives enough power, it will boot and run the last code that was uploaded. An easy way to run an Arduino standalone, is by using a USB charger.
+
+![usb cellphone charger](usb-charger.jpg)
+
+Another way of powering the Arduino is through the VIN pin. Connect a battery source between 7V and 12V to the VIN and GND pins, as seen below:
+
+![9v power source](power-9v.png)
+
+You can combine multiple power sources. Make sure the components get the right voltage, and all grounds are connected together. In the example below, we're powering 5V to servo motors and 9V to the Arduino:
+
+![a 5v and 9v power source in a circuit](5v-servos-9v-arduino.png)
+
+### Transistors
