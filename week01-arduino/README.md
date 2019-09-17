@@ -198,3 +198,17 @@ You'll connect one side of the Relay module to the Arduino, the other side will 
 Create the circuit illustrated below. Do not build the circuit while anything is plugged in! Ask one of the professors to check the wiring, before plugging anything in, to avoid electrical shock.
 
 ![illustration of relay with lamp](images/relay-lamp.png)
+
+### Fun projects to explore
+
+We've got a few more interesting components to work with. Ask the professor for the required parts:
+
+- Neopixel lightstrips: https://learn.adafruit.com/adafruit-neopixel-uberguide
+- Pulse sensors: https://pulsesensor.com/
+- Lasers and large LDRs, fun to create tripwires: https://www.instructables.com/id/Arduino-Laser-Tripwire/
+
+## Arduino and Javascript
+
+Until now, we've been writing C code to program our Arduino. Wouldn't it be fun to combine our Arduino sensors and outputs with our javascript frontends?
+
+Using ElectronJS and Johnny-Five we can do just that! We'll upload a generic sketch to the Arduino and give it instructions over USB from within our Javascript code.
