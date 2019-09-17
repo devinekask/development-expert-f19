@@ -191,3 +191,10 @@ You can use a relay module as a switch to turn external devices on or off. This 
 
 BEWARE: you'll be controlling external devices on AC mains power, 220 Volts. Improper use might result in a deadly electric shock. Be very careful building the circuits, make sure the contacts can't touch eachother or touch you to avoid shorts or electrical shocks.
 
+![photo of a relay module](images/relay-photo.jpg)
+
+You'll connect one side of the Relay module to the Arduino, the other side will be connected between one of the wires of a device's power cable using screw terminals. The Arduino side has 3 pins: 5V, GND and a signal pin. When sending a HIGH to the signal pin, the relay will switch.
+
+Create the circuit illustrated below. Do not build the circuit while anything is plugged in! Ask one of the professors to check the wiring, before plugging anything in, to avoid electrical shock.
+
+![illustration of relay with lamp](images/relay-lamp.png)
