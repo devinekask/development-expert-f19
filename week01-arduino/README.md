@@ -150,4 +150,33 @@ Create the circuit as shown in the illustration below. The led gets its power fr
 
 #### Control a DC motor using an NPN transistor
 
-Next up you'll control a DC motor using the same PN222A NPN-transistor.
+Next up you'll control a DC motor using the same PN222A NPN-transistor. A DC motor contains a rotating coil, generating a magnetic field. The motor speed depends on the applied voltage.
+
+As the coil can generate a negative voltage when the motor slows down, we need to protect our circuit using a diode. A diode is a component which only allows current to flow in a given direction. You've been using a type of diodes before: Light Emitting Diodes.
+
+Build the circuit as shown in the illustration below. Make sure the diode is oriented correctly!
+
+![circuit controlling dc motor with npn transistor](npn-motor.png)
+
+Test the circuit using the blink sketch. The motor should start and stop.
+Alternatively, you can hook up the transistor to a PWN pin, to arrange the speed of the motor.
+
+### Control a 12V LED strip using a MOSFET
+
+The next step is controlling a 12V LED strip. LED strips might require quite a lot of current, depending on the number of LEDs. The PN222A transistor we've used before, can supply up to 600 milliamps of current. An LED strip, especially RGB LED strips, easily surpasses this maximum.
+
+We'll use a different kind of transistor, capable of handling larger currents: a MOSFET. When you research MOSTFETs, you'll see a different terminology: instead of using Base, Emitter and Collector, the terms Base, Source and Drain are used. MOSFETs are controlled by applying a voltage on the Base, which causes current to flow between Drain and Source.
+
+Just like with regular transistors, you'll need to identify which pin corresponds to Base, Source and Drain. As an example, we'll use the IRFZ44N MOSFET, which has the following pinout:
+
+![irfz44n pinout](mosfet-pinout.png)
+
+Build the circuit illustrated below, taking the following into account:
+
+- Connect the MOSFET Base pin to a PWM pin
+- Connect the MOSFET Drain to a pin of the ledstrip (red, green or blue)
+- Connect the MOSFET Source to the GND pin
+
+As always with multiple DC power sources, you'll need to connect the GND of the external 12V DC power source to the GND of the Arduino.
+
+![irfz44n ledstrip](mosfet-ledstrip.png)
