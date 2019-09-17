@@ -20,7 +20,7 @@ Next to a board, you'll need the Arduino IDE. Download the Arduino IDE at https:
 
 We'll do a first quick test of your Arduino board and the IDE. Open op the Arduino IDE. You'll be presented with a screen like the image below:
 
-![Image of Arduino IDE](arduino-ide.png)
+![Image of Arduino IDE](images/arduino-ide.png)
 
 It consists of a large text area where you'll write your code, a button bar on top, a logging area below and a status bar.
 
@@ -66,11 +66,11 @@ Where I stands for current, V for voltage and R for resistance.
 
 When we want to connect an LED to an Arduino, the schematic would look something like this:
 
-![schematic view of led connected to an Arduino](led-basic-wires-schematic.png)
+![schematic view of led connected to an Arduino](images/led-basic-wires-schematic.png)
 
 The same schematic looks like this in an illustrated preview:
 
-![preview of led connected to an Arduino](led-basic-wires-preview.png)
+![preview of led connected to an Arduino](images/led-basic-wires-preview.png)
 
 We could get our hands dirty with a soldering iron, and melt wires and components together, but this would be a pretty slow prototyping / testing proces. Instead of that, we'll use a breadboard.
 
@@ -78,7 +78,7 @@ Breadboards make it easier to prototype electronic circuits. Make sure to [read 
 
 Build the circuit below using a breadboard and test the Blink example again. The LED should turn on and off.
 
-![preview of the led with breadboard wiring](led-basic-breadboard-preview.png)
+![preview of the led with breadboard wiring](images/led-basic-breadboard-preview.png)
 
 If it doesn't, check the following potential issues:
 
@@ -106,15 +106,15 @@ Right now, you've been powering the Arduino circuit from your USB port, supplyin
 
 An Arduino remembers the last sketch that was uploaded to it. As soon as it receives enough power, it will boot and run the last code that was uploaded. An easy way to run an Arduino standalone, is by using a USB charger.
 
-![usb cellphone charger](usb-charger.jpg)
+![usb cellphone charger](images/usb-charger.jpg)
 
 Another way of powering the Arduino is through the VIN pin. Connect a battery source between 7V and 12V to the VIN and GND pins, as seen below:
 
-![9v power source](power-9v.png)
+![9v power source](images/power-9v.png)
 
 You can combine multiple power sources. Make sure the components get the right voltage, and all grounds are connected together. In the example below, we're powering 5V to servo motors and 9V to the Arduino:
 
-![a 5v and 9v power source in a circuit](5v-servos-9v-arduino.png)
+![a 5v and 9v power source in a circuit](images/5v-servos-9v-arduino.png)
 
 ### Transistors
 
@@ -126,13 +126,13 @@ The 3 connectors from a transistor are called Emitter, Base and Collector. There
 
 You can switch an NPN transistor by applying a positive voltage to the base bin. Current will flow from Collector to Emitter:
 
-![npn transitor](npn.png)
+![npn transitor](images/npn.png)
 
 #### PNP Transistor
 
 A PNP transistor switches when you apply a lower voltage to the Base pin compared with the Emitter pin. Current will flow from Emitter to Collector:
 
-![pnp transistor](pnp.png)
+![pnp transistor](images/pnp.png)
 
 #### Control a 5V LED with an NPN transistor
 
@@ -140,13 +140,13 @@ As a first test, we'll control a led using a transistor. This might seem overkil
 
 The transistor in your kit is a small black block with a straight side and a curved side. The type number is printed on the block, we'll be using a PN222A transistor, which is an NPN transistor:
 
-![npn transitor pins](npn-pins.png)
+![npn transitor pins](images/npn-pins.png)
 
 Double check the type number on the component. Lookup the pinout of the base, collector and emitter in case it's not a PN222A.
 
 Create the circuit as shown in the illustration below. The led gets its power from the 5V pin on the Arduino. By switching the transistor from pin 13, current will flow from the LED to GND. Test the circuit using the blink example code.
 
-![circuit controlling led with npn transistor](npn-led.png)
+![circuit controlling led with npn transistor](images/npn-led.png)
 
 #### Control a DC motor using an NPN transistor
 
@@ -156,12 +156,12 @@ As the coil can generate a negative voltage when the motor slows down, we need t
 
 Build the circuit as shown in the illustration below. Make sure the diode is oriented correctly!
 
-![circuit controlling dc motor with npn transistor](npn-motor.png)
+![circuit controlling dc motor with npn transistor](images/npn-motor.png)
 
 Test the circuit using the blink sketch. The motor should start and stop.
 Alternatively, you can hook up the transistor to a PWN pin, to arrange the speed of the motor.
 
-### Control a 12V LED strip using a MOSFET
+#### Control a 12V LED strip using a MOSFET
 
 The next step is controlling a 12V LED strip. LED strips might require quite a lot of current, depending on the number of LEDs. The PN222A transistor we've used before, can supply up to 600 milliamps of current. An LED strip, especially RGB LED strips, easily surpasses this maximum.
 
@@ -169,7 +169,7 @@ We'll use a different kind of transistor, capable of handling larger currents: a
 
 Just like with regular transistors, you'll need to identify which pin corresponds to Base, Source and Drain. As an example, we'll use the IRFZ44N MOSFET, which has the following pinout:
 
-![irfz44n pinout](mosfet-pinout.png)
+![irfz44n pinout](images/mosfet-pinout.png)
 
 Build the circuit illustrated below, taking the following into account:
 
@@ -179,4 +179,15 @@ Build the circuit illustrated below, taking the following into account:
 
 As always with multiple DC power sources, you'll need to connect the GND of the external 12V DC power source to the GND of the Arduino.
 
-![irfz44n ledstrip](mosfet-ledstrip.png)
+![irfz44n ledstrip](images/mosfet-ledstrip.png)
+
+Create a sketch where you apply a PWN signal to one of the output pins: you'll see the ledstrip fade in / out.
+
+### Relays
+
+You can use a relay module as a switch to turn external devices on or off. This way, you're able to control any regular electrical device with an Arduino (well, turn any device on or off using the Arduino...)
+
+![warning high voltage](images/warning-high-voltage.png)
+
+BEWARE: you'll be controlling external devices on AC mains power, 220 Volts. Improper use might result in a deadly electric shock. Be very careful building the circuits, make sure the contacts can't touch eachother or touch you to avoid shorts or electrical shocks.
+
