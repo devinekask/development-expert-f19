@@ -211,4 +211,90 @@ We've got a few more interesting components to work with. Ask the professor for 
 
 Until now, we've been writing C code to program our Arduino. Wouldn't it be fun to combine our Arduino sensors and outputs with our javascript frontends?
 
-Using ElectronJS and Johnny-Five we can do just that! We'll upload a generic sketch to the Arduino and give it instructions over USB from within our Javascript code.
+Using [Electron](https://electronjs.org) and [Johnny-Five](http://johnny-five.io) we can do just that! We'll upload a generic sketch (Firmata) to the Arduino and give it instructions over USB from within our Javascript code.
+
+### Electron
+
+First of all, we'll run our javascript inside an Electron App. Basically, Electron is a mashup of nodejs and the Chromium rendering engine. You'll run you webpages (including javascript) locally, as a desktop application. This enables you to do everything you could do in a nodejs application but from within your frontend javascript code: access the filesystem, interact with hardware, talk to C++ extensions, ...
+
+You're probably already using a couple of Desktop apps built using Electron: Visual Studio Code, Atom, Slack, Hyper, Github Desktop... are all built on top of Electron.
+
+An easy way to get started is by using the electron-quick-start example. [Follow the "Writing Your First Electron App" tutorial](https://electronjs.org/docs/tutorial/first-app) as the first step!
+
+### Johnny Five
+
+Johnny Five is a library which enables you to talk to electronics from Javascript. It uses a standard protocol, called Firmata, to send instructions to the Arduino over the USB connection. An instruction could be turn on an LED, read a sensor value, move a servo, ...
+
+First of all, you'll need an Arduino with the StandardFirmata sketch. Upload this Sketch (`File > Examples > Firmata > StandardFirmata`) to your Arduino UNO.
+
+Next to that, make sure you've got node-gyp installed globally: `npm install -g node-gyp`
+
+#### Hello Johnny Five
+
+We'll expand the electron-quick-start project to control an Arduino using Johnny five.
+
+Add Johnny-five to the project:
+
+```bash
+npm install johnny-five
+```
+
+Add the necessary code to `renderer.js` to talk to the board from within the renderer javascript:
+
+```javascript
+const { remote } = require('electron');
+const five = remote.require('johnny-five');
+const board = new five.Board();
+
+board.on("ready", () => {
+  const led = new five.Led(13);
+  led.blink(500);
+});
+```
+
+Test the application using `npm start`. You won't see anything happen. If you open the devtools, there's probably an error message there:
+
+> Uncaught ReferenceError: require is not defined
+
+This means the javascript runtime doesn't know about the commonjs require method, used in nodejs. Electron has the nodejs methods disabled by default in the renderer proces.
+
+Open up `main.js` and add the node integration to the browserwindow options:
+
+```javascript
+// Create the browser window.
+mainWindow = new BrowserWindow({
+  width: 800,
+  height: 600,
+  webPreferences: {
+    preload: path.join(__dirname, 'preload.js'),
+    nodeIntegration: true
+  }
+})
+```
+
+While we're at it, we'll open the DevTools automatically as well. Comment out the Open Devtools line:
+
+```javascript
+// Open the DevTools.
+mainWindow.webContents.openDevTools()
+```
+
+Run the app again. You should see a different error message now:
+
+> Uncaught Error: The module 'projects/p01-hello-johnny-five/node_modules/@serialport/bindings/build/Release/bindings.node' was compiled against a different Node.js version using NODE_MODULE_VERSION 67. This version of Node.js requires NODE_MODULE_VERSION 73. Please try  re-compiling or re-installing the module (for instance, using `npm rebuild` or `npm install`).
+
+Johnny five uses a module called serialport, which uses some C++ code to send messages over USB. This C++ code is compiled for nodejs by default, but we're using an electron flavor of node! We'll need to make sure this C++ code is compatible with Electron.
+
+Luckely, there's a package doing just that: `electron-rebuild`. Add this package to your devDependencies:
+
+```bash
+npm install electron-rebuild --dev
+```
+
+Run the electron-rebuild script to recompile the native modules for use with Electron:
+
+```bash
+./node_modules/.bin/electron-rebuild
+```
+
+Launch the app again. You should see the onboard LED blink! Once this works, try connecting a real LED again.
