@@ -298,3 +298,12 @@ Run the electron-rebuild script to recompile the native modules for use with Ele
 ```
 
 Launch the app again. You should see the onboard LED blink! Once this works, try connecting a real LED again.
+
+#### Projects to build
+
+Now that we've got a working system combining Arduino and frontend code, you've got a lot of interesting options to explore. Use the docs at http://johnny-five.io/ and try building some of the following ideas:
+
+1. Fade an LED using an `<input type="range">`
+2. Change a servo angle based on the x position of your mouse pointer on the screen
+3. Control the background color of your `<body>` tag using a potentiometer or a light sensor
+4. Build a basic arcade game (pong, breakout) and control it using an Arduino sensor
