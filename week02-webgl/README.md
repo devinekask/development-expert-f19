@@ -14,7 +14,7 @@ During the first lab, we'll take you through some of the chapters of https://web
 
 ### WebGL Fundamentals
 
-Go through the page at https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html. Don't just copy past the code from the samples, rather type these line by on. Try to convert the example code to ES6 as well! No need to use a transpiler or anything fancy, you may use inline javascript in your pages.
+Go through the page at https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html. Don't just copy past the code from the samples, rather type these line by line. Try to convert the example code to ES6 as well! No need to use a transpiler or anything fancy, you may use inline javascript in your pages while learning the API.
 
 The coding part of that first page starts at "First we need an HTML canvas element" - the code blocks before that are pseudo-code, illustrating a couple of core concepts concerning shaders.
 
@@ -39,3 +39,49 @@ Also, add some basic css to stretch the canvas to the full window size:
 </style>
 ```
 
+You can find some step-by-step snapshots of the tutorial in this repo's projects subfolder.
+
+### WebGL 2D Translation
+
+After finishing the fundamentals chapter, we'll continue our journy by following the https://webglfundamentals.org/webgl/lessons/webgl-2d-translation.html page. This chapter shows you how to update vertex positions to move things on the canvas.
+
+#### Part one: move a rectangle
+
+In the first part, we'll move a rectangle across the screen when slider values change.
+
+Instead of using the webglLessonsUI library to create sliders (as shown in the example code on the page), we'll be using [dat.gui](https://github.com/dataarts/dat.gui) to create a quick UI for modifying variables.
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+```
+
+Be sure to [check some examples of dat.gui online](https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage)
+
+dat.gui works by modifying properties on an object. Instead of working with a translation array (as in tutorial), you'll be defining a global properties object:
+
+```javascript
+// const translation = [0, 0];
+const properties = {
+  x: 0,
+  y: 0
+};
+```
+
+And use this properties object where you call the `setRectangle` method:
+
+```javascript
+// setRectangle(gl, translation[0], translation[1], width, height);
+setRectangle(gl, properties.x, properties.y, width, height);
+```
+
+Add the gui panel at the end of your init function, and make sure `drawScene` gets called when the values change:
+
+```javascript
+const gui = new dat.GUI();
+gui.add(properties, 'x', 0, 500).onChange(drawScene);
+gui.add(properties, 'y', 0, 500).onChange(drawScene);
+```
+
+You should be able to move the rectangle using the dat.gui sliders:
+
+![slider controller rectangle](images/webgl-2d-translation.gif)
