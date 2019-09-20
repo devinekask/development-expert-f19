@@ -34,7 +34,7 @@ We will try to run the "Blink" example on the Arduino board.
 
 If everything works as it should, you should see the onboard LED blink on the board!
 
-`TODO: Insert blinking GIF`
+![Image of blinking LED on Arduino](images/arduino-blink.gif)
 
 Take a look at the code from this example. The language you write Arduino code in is the C programming language. We can identify a couple of parts in this Sketch:
 
