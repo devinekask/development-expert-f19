@@ -15,3 +15,27 @@ During the first lab, we'll take you through some of the chapters of https://web
 ### WebGL Fundamentals
 
 Go through the page at https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html. Don't just copy past the code from the samples, rather type these line by on. Try to convert the example code to ES6 as well! No need to use a transpiler or anything fancy, you may use inline javascript in your pages.
+
+The coding part of that first page starts at "First we need an HTML canvas element" - the code blocks before that are pseudo-code, illustrating a couple of core concepts concerning shaders.
+
+```html
+<canvas id="c"></canvas>
+```
+
+Make sure to include `<script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>` as well. This js file contains the `webglUtils.resizeCanvasToDisplaySize` function used in the tutorial.
+
+Also, add some basic css to stretch the canvas to the full window size:
+
+```html
+<style>
+  body {
+    margin: 0;
+  }
+  canvas {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+  }
+</style>
+```
+

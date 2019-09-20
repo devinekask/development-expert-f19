@@ -2,6 +2,8 @@
 
 This course is the finalizing technical / coding course at Devine. This course teaches you the basic principles and frameworks to get started with alternative ways of interaction (aka non keyboard / mouse interaction).
 
+You'll get 4 weeks of new topics (Arduino, WebGL, Communication and AI), followed by a hackathon and a 5 week personal project.
+
 ## Week 1 Arduino
 
 Get basic knowledge of electrical circuits. Program basic Arduino sketches, interacting with different inputs and outputs. Leverage javascript applications using firmata with Johnny Five and Electron JS.
