@@ -1,8 +1,8 @@
 # Development Expert, Fall 2019
 
-This course is the finalizing technical / coding course at Devine. This course teaches you the basic principles and frameworks to get started with alternative ways of interaction (aka non keyboard / mouse interaction).
+This course is the finalizing technical / coding course at Devine. We'll teach you the basic principles and frameworks to get started with alternative ways of interaction (aka non keyboard / mouse interaction).
 
-You'll get 4 weeks of new topics (Arduino, WebGL, Communication and AI), followed by a hackathon and a 5 week personal project.
+You'll get 4 weeks of new topics (Arduino, WebGL, Communication and AI), followed by a hackathon and a 5 week passion project.
 
 ## Week 1 Arduino
 
