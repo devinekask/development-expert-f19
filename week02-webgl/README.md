@@ -200,3 +200,57 @@ const init = async () => {
 Try to think along with each step in the online guide! If you get lost, you can always ask your professor for help, or take a look at the examples in the projects subfolder...
 
 ![image moving in a webgl context](images/webgl-image-basic.gif)
+
+### An animated shader
+
+Let's spice things up a little and implement some animated shader magic. Strip the previous example of the slider panel, so you end up with an image on the webgl canvas.
+
+We will be updating the canvas in the browser's render loop. To do this, implement a requestAnimationFrame loop:
+
+```javascript
+const drawScene = () => {
+  // ...
+  // at the end of the function, schedule it again for the next frame
+  requestAnimationFrame(drawScene);
+};
+```
+
+In the fragment shader, you'll add another uniform, which will keep the number of milliseconds the app has been running:
+
+```cpp
+// time
+uniform float u_time;
+```
+
+Store the uniform location in a global variable, like you've done before:
+
+```cpp
+timeLocation = gl.getUniformLocation(program, "u_time");
+```
+
+And inside of the drawScene loop, you'll pass the time the page has been running to this uniform:
+
+```javascript
+gl.uniform1f(timeLocation , performance.now());
+```
+
+As a final step, in the fragment shader we'll pick the color from an offset, based on this timer value:
+
+```cpp
+void main() {
+  float frequency = 100.0;
+  float amplitude = 0.005;
+  float speed = 0.005;
+  float distortion = sin(v_texCoord.y * frequency + u_time * speed) * amplitude;
+  gl_FragColor = texture2D(u_image, vec2(v_texCoord.x + distortion, v_texCoord.y));
+}
+```
+
+Test the app. You should see an animated wave effect on the image:
+
+![animated wave effect applied to photo of cat](images/webgl-cat-waves.gif)
+
+## Where to go from here
+
+- https://github.com/sjfricke/awesome-webgl
+- https://thebookofshaders.com/
