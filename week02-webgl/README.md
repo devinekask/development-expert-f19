@@ -136,3 +136,67 @@ After rotation, we'll add scaling support to our little WebGL 2D demo. Go throug
 The next thing we'll implement is Matrices, to have greater flexibility in the transformations we want to apply to our geometries. Matrices are a pretty powerful construct, and we'll run into then again when we talk about Neural Networks in a future chapter.
 
 Take your time to go through the content at https://webglfundamentals.org/webgl/lessons/webgl-2d-matrices.html
+
+### WebGL Image Processing
+
+We'been drawing shapes and interacting with our WebGL content mostly through the vertex shader. The next step is to look what we can do using images and WebGL. As this has to do with pixel colors, most of our code with be interacting with the fragment shader.
+
+Update the setGeometry function, so it draws a rectangle instead of an "F" shape:
+
+```javascript
+const setGeometry = (gl, width, height) => {
+  gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([
+          0, 0,
+          width, 0,
+          0, height,
+          0, height,
+          width, 0,
+          width, height
+      ]),
+      gl.STATIC_DRAW);
+};
+```
+
+Update the call to this setGeometry function, so it gets an arbitrary width and height:
+
+```javascript
+setGeometry(gl, 200, 100);
+```
+
+And make sure the `drawArrays` call gets 6 as the value for the vertex count:
+
+```javascript
+gl.drawArrays(gl.TRIANGLES, 0, 6);
+```
+
+Go through the content at https://webglfundamentals.org/webgl/lessons/webgl-image-processing.html. Note that you'll need to run the html files through a webserver to be able to load images in a WebGL context. You can use your VSCode live reload server, http-server or your MAMP server to host the content.
+
+THe instructions at webglfundamentals are not building on top of the matrix logic from our previous step. However, it's a good exercise to try to build on top of our previous step, and integrate that logic.
+
+To load the image, an easier way is to use async/await with a promise:
+
+```javascript
+const loadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener("load", () => resolve(img));
+    img.addEventListener("error", err => reject(err));
+    img.src = src;
+  });
+};
+```
+
+Make the init function async, and await for the loadImage to resolve inside the init funciton:
+
+```javascript
+const init = async () => {
+  const image = await loadImage('images/cat.jpg');
+  // ...
+};
+```
+
+Try to think along with each step in the online guide! If you get lost, you can always ask your professor for help, or take a look at the examples in the projects subfolder...
+
+![image moving in a webgl context](images/webgl-image-basic.gif)
