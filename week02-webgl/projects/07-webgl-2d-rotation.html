@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Hello WebGL</title>
+  <style>
+    body {
+      margin: 0;
+    }
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+  <script id="2d-vertex-shader" type="notjs">
+ 
+    // an attribute will receive data from a buffer
+    attribute vec2 a_position;
+
+    uniform vec2 u_resolution;
+    uniform vec2 u_translation;
+    uniform vec2 u_rotation;
+   
+    // all shaders have a main function
+    void main() {
+      // Rotate the position
+      vec2 rotatedPosition = vec2(
+         a_position.x * u_rotation.y + a_position.y * u_rotation.x,
+         a_position.y * u_rotation.y - a_position.x * u_rotation.x);
+     
+      // Add in the translation.
+      vec2 position = rotatedPosition + u_translation;
+
+      // convert the rectangle from pixels to 0.0 to 1.0
+      vec2 zeroToOne = position / u_resolution;
+   
+      // convert from 0->1 to 0->2
+      vec2 zeroToTwo = zeroToOne * 2.0;
+   
+      // convert from 0->2 to -1->+1 (clip space)
+      vec2 clipSpace = zeroToTwo - 1.0;
+   
+      gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+    }
+   
+  </script>
+   
+  <script id="2d-fragment-shader" type="notjs">
+   
+    // fragment shaders don't have a default precision so we need
+    // to pick one. mediump is a good default
+    precision mediump float;
+
+    uniform vec4 u_color;
+   
+    void main() {
+      // gl_FragColor is a special variable a fragment shader
+      // is responsible for setting
+      gl_FragColor = u_color;
+    }
+   
+  </script>
+  <script>
+  {
+
+    const canvas = document.getElementById('c');
+    const gl = canvas.getContext('webgl');
+    const vertexShaderSource = document.getElementById("2d-vertex-shader").text;
+    const fragmentShaderSource = document.getElementById("2d-fragment-shader").text;
+
+    let vertexShader, fragmentShader, program;
+    let positionAttributeLocation, positionBuffer;
+    let resolutionUniformLocation;
+    let colorUniformLocation;
+    let translationLocation;
+    let rotationLocation;
+
+    const properties = {
+      x: 0,
+      y: 0,
+      rotation: 90
+    };
+    const width = 100;
+    const height = 30;
+    const color = [Math.random(), Math.random(), Math.random(), 1];
+
+    const init = () => {
+      vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+      fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+      program = createProgram(gl, vertexShader, fragmentShader);
+
+      resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
+      colorUniformLocation = gl.getUniformLocation(program, "u_color");
+      translationLocation = gl.getUniformLocation(program, "u_translation");
+      rotationLocation = gl.getUniformLocation(program, "u_rotation");
+
+      positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+      positionBuffer = gl.createBuffer();
+      // Bind the position buffer.
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      // Put geometry data into buffer
+      setGeometry(gl);
+
+      drawScene();
+
+      const gui = new dat.GUI();
+      gui.add(properties, 'x', 0, 500).onChange(drawScene);
+      gui.add(properties, 'y', 0, 500).onChange(drawScene);
+      gui.add(properties, 'rotation', 0, 360).onChange(drawScene);
+    };
+
+    const drawScene = () => {
+      webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+      // Clear the canvas
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      // Tell it to use our program (pair of shaders)
+      gl.useProgram(program);
+
+      gl.enableVertexAttribArray(positionAttributeLocation);
+      // Bind the position buffer.
+      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+      // using a block scope for the extra consts
+      {     
+        // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+        const size = 2;          // 2 components per iteration
+        const type = gl.FLOAT;   // the data is 32bit floats
+        const normalize = false; // don't normalize the data
+        const stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        const offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(positionAttributeLocation, size, type, normalize, stride, offset);
+      }
+
+      // Set the translation.
+      gl.uniform2fv(translationLocation, [properties.x, properties.y]);
+
+      // Set the rotation.
+      const angleInRadians = properties.rotation * Math.PI / 180;
+      const rotation = [Math.cos(angleInRadians), Math.sin(angleInRadians)];
+      gl.uniform2fv(rotationLocation, rotation);
+
+      // set the resolution
+      gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+  
+      // Set a random color.
+      gl.uniform4f(colorUniformLocation, color[0], color[1], color[2], 1);
+  
+      // Draw the rectangle.
+      gl.drawArrays(gl.TRIANGLES, 0, 18);
+    };
+
+    // Returns a random integer from 0 to range - 1.
+    const randomInt = (range) => {
+      return Math.floor(Math.random() * range);
+    };
+
+    // Fill the buffer with the values that define a letter 'F'.
+    const setGeometry = (gl) => {
+      gl.bufferData(
+          gl.ARRAY_BUFFER,
+          new Float32Array([
+              // left column
+              0, 0,
+              30, 0,
+              0, 150,
+              0, 150,
+              30, 0,
+              30, 150,
+    
+              // top rung
+              30, 0,
+              100, 0,
+              30, 30,
+              30, 30,
+              100, 0,
+              100, 30,
+    
+              // middle rung
+              30, 60,
+              67, 60,
+              30, 90,
+              30, 90,
+              67, 60,
+              67, 90,
+          ]),
+          gl.STATIC_DRAW);
+    };
+
+    const createShader = (gl, type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+      if (success) {
+        return shader;
+      }
+      console.log(gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+    };
+
+    const createProgram = (gl, vertexShader, fragmentShader) => {
+      const program = gl.createProgram();
+      gl.attachShader(program, vertexShader);
+      gl.attachShader(program, fragmentShader);
+      gl.linkProgram(program);
+      const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+      if (success) {
+        return program;
+      }
+      console.log(gl.getProgramInfoLog(program));
+      gl.deleteProgram(program);
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>

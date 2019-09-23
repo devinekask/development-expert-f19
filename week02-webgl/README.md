@@ -45,7 +45,7 @@ You can find some step-by-step snapshots of the tutorial in this repo's projects
 
 After finishing the fundamentals chapter, we'll continue our journy by following the https://webglfundamentals.org/webgl/lessons/webgl-2d-translation.html page. This chapter shows you how to update vertex positions to move things on the canvas.
 
-#### Part one: move a rectangle
+#### Part 1: move a rectangle
 
 In the first part, we'll move a rectangle across the screen when slider values change.
 
@@ -85,3 +85,54 @@ gui.add(properties, 'y', 0, 500).onChange(drawScene);
 You should be able to move the rectangle using the dat.gui sliders:
 
 ![slider controller rectangle](images/webgl-2d-translation.gif)
+
+#### Part 2: more complex shape
+
+Go through the steps to draw / translate the F-shape instead of a rectangle.
+
+Note that passing the data for the u_translation has to happen as an array:
+
+```javascript
+gl.uniform2fv(translationLocation, [properties.x, properties.y]);
+```
+
+### WebGL 2D Rotation
+
+The next step is adding rotations. Go through the instructions at https://webglfundamentals.org/webgl/lessons/webgl-2d-rotation.html
+
+We'll do the rotation using one dat.gui slider instead of the rotation circle ui component.
+
+Add a rotation property:
+
+```javascript
+const properties = {
+  x: 0,
+  y: 0,
+  rotation: 90
+};
+```
+
+Configure it to go from 0 to 360 degrees:
+
+```javascript
+gui.add(properties, 'rotation', 0, 360).onChange(drawScene);
+```
+
+We'll need to convert the degrees to radians, before passing the rotation vector to the shader:
+
+```javascript
+// Set the rotation.
+const angleInRadians = properties.rotation * Math.PI / 180;
+const rotation = [Math.cos(angleInRadians), Math.sin(angleInRadians)];
+gl.uniform2fv(rotationLocation, rotation);
+```
+
+### WebGL 2D Scale
+
+After rotation, we'll add scaling support to our little WebGL 2D demo. Go through the instructions at https://webglfundamentals.org/webgl/lessons/webgl-2d-scale.html to add this.
+
+### WebGL 3D Matrices
+
+The next thing we'll implement is Matrices, to have greater flexibility in the transformations we want to apply to our geometries. Matrices are a pretty powerful construct, and we'll run into then again when we talk about Neural Networks in a future chapter.
+
+Take your time to go through the content at https://webglfundamentals.org/webgl/lessons/webgl-2d-matrices.html
