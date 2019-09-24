@@ -250,6 +250,94 @@ Test the app. You should see an animated wave effect on the image:
 
 ![animated wave effect applied to photo of cat](images/webgl-cat-waves.gif)
 
+#### Scale canvas to image size
+
+Right now, our canvas fills the entire screen. Let's get rid of some of that code, so the canvas auto-sizes to the image size.
+
+First of all, get rid of the global css:
+
+```css
+/* canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+} */
+```
+
+Remove the webgl-utils library from the html:
+
+```html
+<!-- <script src="https://webglfundamentals.org/webgl/resources/webgl-utils.js"></script> -->
+```
+
+And get rid of the call to webglUtils.resizeCanvasToDisplaySize(gl.canvas); in drawScene():
+
+```javascript
+// webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+```
+
+As a final step, set the canvas size equal to the image size in the init function:
+
+```javascript
+const image = await loadImage('images/cat.jpg');
+width = image.width;
+height = image.height;
+c.width = width;
+c.height = height;
+```
+
+#### Trigger effect on hover
+
+Let's say we only want to trigger our wave effect when we hover over the image / canvas? We could do this by keeping track of the hover state, in a global variable:
+
+```javascript
+let mouseIsOverCanvas = false;
+```
+
+With a mouseover and mouseout listener, we can update this global boolean:
+
+```javascript
+c.addEventListener('mouseover', () => mouseIsOverCanvas = true);
+c.addEventListener('mouseout', () => mouseIsOverCanvas = false);
+```
+
+Now we need to pass this boolean value to our fragment shader, so it knows if it needs to apply the effect or not:
+
+```cpp
+// mouse over canvas or not?
+uniform bool mouseIsOverCanvas;
+
+void main() {
+  if (mouseIsOverCanvas) {
+    float frequency = 100.0;
+    float amplitude = 0.005;
+    float speed = 0.005;
+    float distortion = sin(v_texCoord.y * frequency + u_time * speed) * amplitude;
+    gl_FragColor = texture2D(u_image, vec2(v_texCoord.x + distortion, v_texCoord.y));
+  } else {
+    gl_FragColor = texture2D(u_image, v_texCoord);
+  }
+}
+```
+
+Next, store the uniform location in a global javascript variable.
+
+Finally, set the uniform to the correct value, inside your draw loop. Note that we use the `gl.uniform1i` method to set the boolean value to 1 or 0.
+
+```javascript
+if (mouseIsOverCanvas) {
+  gl.uniform1i(mouseIsOverCanvasLocation, 1);
+} else {
+  gl.uniform1i(mouseIsOverCanvasLocation, 0);
+}
+```
+
+Test the app, the wave effect should only happen when the cursor hovers over the image.
+
+As a final exercise on 2D webgl, try to implement the shader from https://www.shadertoy.com/view/4dXBW2 in your code. Note that there are some WebGL2 quircks in the code. Read the error messages you're getting, and try to get it working!
+
+![photo of cat with glitch effect](images/webgl-cat-glitch.gif)
+
 ## Where to go from here
 
 - https://github.com/sjfricke/awesome-webgl
