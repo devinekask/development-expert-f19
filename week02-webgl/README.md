@@ -371,7 +371,27 @@ Work your way through the following lessons:
 - https://threejsfundamentals.org/threejs/lessons/threejs-primitives.html
 - https://threejsfundamentals.org/threejs/lessons/threejs-scenegraph.html
 
+Read up on materials at https://threejsfundamentals.org/threejs/lessons/threejs-materials.html
+
+And continue coding with:
+
+- https://threejsfundamentals.org/threejs/lessons/threejs-textures.html (up until Filtering and Mips)
+
+After handling the basics of textures, read through the following pages, and check the live demos. No need to code these yourself, just get yourself familiar with the different types and options:
+
+- https://threejsfundamentals.org/threejs/lessons/threejs-lights.html
+- https://threejsfundamentals.org/threejs/lessons/threejs-cameras.html
+- https://threejsfundamentals.org/threejs/lessons/threejs-shadows.html
+
+### The Aviator
+
+A fun tutorial, applying a lot of the content covered before, can be found at https://tympanus.net/codrops/2016/04/26/the-aviator-animating-basic-3d-scene-threejs/ - go through the tutorial, and try implementing it using ES6 code.
+
+![end result of tutorial, controlling a 3d plane by moving the mouse](images/threejs-aviator-final.gif)
+
 ## Where to go from here
 
 - https://github.com/sjfricke/awesome-webgl
 - https://thebookofshaders.com/
+- https://www.august.com.au/blog/animating-scenes-with-webgl-three-js
+- https://tympanus.net/codrops/2017/05/09/infinite-tubes-with-three-js/
