@@ -340,21 +340,36 @@ As a final exercise on 2D webgl, try to implement the shader from https://www.sh
 
 Another cool tutorial to follow is [the "animated heat distortion effect" tutorial](https://tympanus.net/codrops/2016/05/03/animated-heat-distortion-effects-webgl/). It shows a couple of new techniques, such as handling multiple textures in a WebGL app.
 
-## WebGL 3D
+## WebGL 3D - Three.js
 
 Survived the WebGL 2D part? Let's add the 3rd dimension to our apps!
 
-Read through the content at:
+Doing 2D WebGL might have seemed a lot of work already, and things get a bit more complicated when we start adding the 3rd dimension. This is why we'll use [Three.js](https://threejs.org/) to abstract some of the math and shader stuff.
 
-- https://webglfundamentals.org/webgl/lessons/webgl-3d-orthographic.html
-- https://webglfundamentals.org/webgl/lessons/webgl-3d-perspective.html
+Three.js itself has some great [documentation](https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene) and [an extensive list of examples](https://threejs.org/examples/).
 
-No need to write all the code, as we will be using a framework (THREE.js) later. However, there are a couple of concepts we want you to know of before we start with THREE.js:
+To learn how to work with Three.js, we are going to go with the lesson series at https://threejsfundamentals.org/. We'll go through some of the pages there, before creating an interactive 3D WebGL experience.
 
-- Rotation over x-axis, y-axis and z-axis
-- Culling front / back facing triangles
-- Depth buffer
-- field-of-view, near clip pane and far clip pane (https://webglfundamentals.org/webgl/frustum-diagram.html)
+### Hello Three.js
+
+To be able to run of the Thee.js code, you'll need to link the Three.js library. Just use the CDN for now. And, as you're just experimenting and learning right now, you don't really need to go through the trouble of settings up a bundler / transpiler. Just put your code in a script tag and start experimenting 🙂.
+
+```javascript
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
+<script>
+{
+  // here be our code
+}
+</script>
+```
+
+You'll start by going through the page at https://threejsfundamentals.org/threejs/lessons/threejs-fundamentals.html where you'll build a basic Three.js scene, familiarizing yourself with some basic Three.js concepts.
+
+Work your way through the following lessons:
+
+- https://threejsfundamentals.org/threejs/lessons/threejs-responsive.html
+- https://threejsfundamentals.org/threejs/lessons/threejs-primitives.html
+- https://threejsfundamentals.org/threejs/lessons/threejs-scenegraph.html
 
 ## Where to go from here
 
