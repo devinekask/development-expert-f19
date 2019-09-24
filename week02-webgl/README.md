@@ -1,4 +1,4 @@
-# WebGL
+# Week 2 - WebGL
 
 WebGL is a rasterization engine, enabling you to use the raw power of your GPU from javascript. It's mostly used to render pixels to an HTML canvas, and opens up the possibility to do 3D graphics rendering using web technologies.
 
@@ -337,6 +337,24 @@ Test the app, the wave effect should only happen when the cursor hovers over the
 As a final exercise on 2D webgl, try to implement the shader from https://www.shadertoy.com/view/4dXBW2 in your code. Note that there are some WebGL2 quircks in the code. Read the error messages you're getting, and try to get it working!
 
 ![photo of cat with glitch effect](images/webgl-cat-glitch.gif)
+
+Another cool tutorial to follow is [the "animated heat distortion effect" tutorial](https://tympanus.net/codrops/2016/05/03/animated-heat-distortion-effects-webgl/). It shows a couple of new techniques, such as handling multiple textures in a WebGL app.
+
+## WebGL 3D
+
+Survived the WebGL 2D part? Let's add the 3rd dimension to our apps!
+
+Read through the content at:
+
+- https://webglfundamentals.org/webgl/lessons/webgl-3d-orthographic.html
+- https://webglfundamentals.org/webgl/lessons/webgl-3d-perspective.html
+
+No need to write all the code, as we will be using a framework (THREE.js) later. However, there are a couple of concepts we want you to know of before we start with THREE.js:
+
+- Rotation over x-axis, y-axis and z-axis
+- Culling front / back facing triangles
+- Depth buffer
+- field-of-view, near clip pane and far clip pane (https://webglfundamentals.org/webgl/frustum-diagram.html)
 
 ## Where to go from here
 
