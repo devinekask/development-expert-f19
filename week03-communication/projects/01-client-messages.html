@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Socket.io Client</title>
+</head>
+<body>
+  <form id="msgForm" method="post" action="">
+    <input id="msgInput" type="text" name="msgInput" />
+    <button type="submit">Send Message</button>
+  </form>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script>
+  {
+    const msgForm = document.querySelector(`#msgForm`);
+    const msgInput = document.querySelector(`#msgInput`);
+    
+    let socket; // will be assigned a value later
+    
+    const init = () => {
+      socket = io.connect(`http://192.168.1.153:8082`);
+      socket.on(`connect`, () => {
+        console.log(`Connected: ${socket.id}`);
+      });
+      socket.on(`message`, message => {
+        console.log(`Received message: ${message}`);
+      });
+      msgForm.addEventListener(`submit`, e => handleSubmit(e));
+    };
+
+    const handleSubmit = e => {
+      e.preventDefault();
+      if (socket.connected) {
+        socket.emit(`message`, msgInput.value);
+      }
+      msgInput.value = ``;
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>

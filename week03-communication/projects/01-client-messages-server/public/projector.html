@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Send Me A Message</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+  </head>
+  <body>
+    <div class="bg-img"></div>
+    <h1 class="connectionUrl code"></h1>
+    <form class="msgForm" method="post" action="">
+      <input class="msgInput" type="text" name="msgInput" />
+      <button type="submit">Send Message</button>
+    </form>
+    <div class="messages"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="assets/js/libs/randomColor.js"></script>
+    <script>
+    {
+      const connectionUrlEl = document.querySelector(`.connectionUrl`),
+        $messages = document.querySelector(`.messages`);
+
+      const msgForm = document.querySelector(`.msgForm`),
+        msgInput = document.querySelector('.msgInput');
+
+      let socket;
+
+      const init = () => {
+        connect();
+        msgForm.addEventListener(`submit`, e => handleSubmit(e));
+      };
+
+      const connect = () => {
+        socket = io.connect(`/`);
+        socket.on(`connect`, () => {
+          console.log(`Connected: ${socket.id}`);
+        });
+        socket.on(`connectionUrl`, connectionUrl => {
+          connectionUrlEl.innerHTML = `socket = <span class="orange">io</span>.connect(<span class="green">\`${connectionUrl}\`</span>);`;
+        });
+        socket.on(`message`, message => {
+          console.log(`Received message: ${message}`);
+          addMessage(message);
+        });
+      };
+
+      const handleSubmit = e => {
+        e.preventDefault();
+        if (socket) {
+          socket.emit('message', msgInput.value);
+        }
+        msgInput.value = '';
+      };
+
+      const addMessage = message => {
+        const $message = document.createElement(`div`);
+        $message.classList.add(`slam`);
+        $message.classList.add(`message`);
+        $message.style.backgroundColor = randomColor({
+          luminosity: 'light'
+        });
+        $message.style.left = `${Math.random() * 90}%`;
+        $message.style.top = `${Math.random() * 90}%`;
+        $message.textContent = message;
+        $messages.append($message);
+        setTimeout(() => $messages.removeChild($message), 10000);
+        // $message.addEventListener(`animationend`, () => {
+        //   $messages.removeChild($message);
+        // });
+      };
+
+      init();
+    }
+    </script>
+  </body>
+</html>

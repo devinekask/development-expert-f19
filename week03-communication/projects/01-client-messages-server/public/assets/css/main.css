@@ -1,0 +1,99 @@
+html, body { padding: 0; margin: 0; width: 100%; height: 100%; }
+body {
+  overflow: hidden;
+  font-family: Helvetica, Arial, sans-serif;
+  text-align: center;
+  background: linear-gradient(#348AC7, #7474BF);
+}
+h1 {
+  display: inline-block;
+  background: #012453;
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 1rem;
+}
+.code, .red { color: #d05b6d; }
+.green { color: #d0f2a6; }
+.orange { color: #df925e; }
+input, button { border-radius: .3rem; border: 0; outline: 0; padding: .4rem; }
+.messages {
+  position: absolute;
+  left: 0;
+  top: 100px;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+}
+.message {
+  position: absolute;
+  padding: .7rem .7rem;
+  background: #E5E5EA;
+  font-size: 1.5rem;
+  border-radius: 1rem;
+  color: black;
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+  transform-origin: center center;
+  animation-name: loud;
+}
+@keyframes loud {
+  20% {
+    transform: rotate3d(0, 0, 1, 5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  25% {
+    transform: rotate3d(0, 0, 1, -5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  30% {
+    transform: rotate3d(0, 0, 1, 5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  35% {
+    transform: rotate3d(0, 0, 1, -5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  40% {
+    transform: rotate3d(0, 0, 1, 5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  45% {
+    transform: rotate3d(0, 0, 1, -5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  50% {
+    transform: rotate3d(0, 0, 1, 5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  60% {
+    transform: rotate3d(0, 0, 1, 5deg) scale3d(1.5, 1.5, 1.5);
+  }
+  to {
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
+.msgForm { position: relative; z-index: 3000; }
+
+@keyframes slam {
+  0% {
+    transform: rotate3d(0, 0, 1, 5deg) scale3d(3, 3, 3) translate3d(-50px, -10px, 0);
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2);
+  }
+  18% {
+    transform: rotate3d(0, 0, 1, 0deg) scale3d(1, 1, 1) translate3d(0, 0, 0);
+    box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.45);
+  }
+  40% {
+    transform: rotate3d(0, 0, 1, 1deg) scale3d(1.1, 1.1, 1.1) translate3d(-1px, -1px, 0);
+    box-shadow: 0px 0px 100px 2px rgba(0, 0, 0, 0.25);
+  }
+  55% {
+    transform: rotate3d(0, 0, 1, 0deg) scale3d(1.0, 1.0, 1.0) translate3d(0px, 0px, 0);
+  }
+  to {
+    transform: rotate3d(0, 0, 1, 0deg);
+    box-shadow: 0px 0px 125px 5px rgba(0, 0, 0, 0);
+  }
+}
+
+.slam {
+  animation-duration: 1.5s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.87, .58, .25, 1.29);
+  transform-origin: center center;
+  animation-name: slam;
+}
