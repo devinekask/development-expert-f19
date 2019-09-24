@@ -8,9 +8,13 @@ You'll get 4 weeks of new topics (Arduino, WebGL, Communication and AI), followe
 
 Get basic knowledge of electrical circuits. Program basic Arduino sketches, interacting with different inputs and outputs. Leverage javascript applications using firmata with Johnny Five and Electron JS.
 
+[Continue to Week 1 - Arduino](week01-arduino/)
+
 ## Week 2 WebGL
 
 Build your own, custom shader for 2D on the web. Learn the basic principles behind a 3D engine, and get your hands dirty with ThreeJS in your javascript application.
+
+[Continue to Week 2 - WebGL](week02-webgl/)
 
 ## Week 3 Communication
 
