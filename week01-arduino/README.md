@@ -242,9 +242,10 @@ npm install johnny-five
 Add the necessary code to `renderer.js` to talk to the board from within the renderer javascript:
 
 ```javascript
-const { remote } = require('electron');
-const five = remote.require('johnny-five');
-const board = new five.Board();
+const five = require('johnny-five');
+const board = new five.Board({
+  repl: false
+});
 
 board.on("ready", () => {
   const led = new five.Led(13);
