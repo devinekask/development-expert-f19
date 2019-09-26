@@ -338,3 +338,61 @@ socketIds = currentSocketIds;
 
 Test the app, using multiple windows. When you close a window, it's corresponding cursor should disappear from your other windows.
 
+#### Writing the server
+
+Next up is writing your own server.
+
+Create a new node project, with express and socket.io. Host a static directory, where you place your html app from the previous step.
+
+Our server will do a little more than just forwarding messages. It will keep track of some state data: the x and y positions of each connected client. Make sure to adjust the code in the html app to connect to your own server:
+
+```javascript
+socket = io.connect(`/`);
+```
+
+In the server app, you'll store the x and y positions per connected client in a global object. Create a global variable to store this information:
+
+```javascript
+const users = {};
+```
+
+Every time a client connects, you'll add information to this users object for that clients socket id:
+
+```javascript
+users[socket.id] = {
+  id: socket.id,
+  x: Math.random(),
+  y: Math.random()
+};
+```
+
+Listen to the update event of that new socket connection, and update the x and y positions to the new positions:
+
+```javascript
+socket.on('update', data => {
+  users[socket.id].x = data.x;
+  users[socket.id].y = data.y;
+});
+```
+
+When a user disconnects, you'll need to remove the related data from the global object. This is as easy as using the `delete` keyword:
+
+```javascript
+socket.on('disconnect', () => {
+  console.log('client disconnected');
+  delete users[socket.id];
+});
+```
+
+Finally, we'll broadcast the global users object to all connected clients,with a given interval. Start that interval once the server starts, and it should automatically sync the users object to all clients:
+
+```javascript
+server.listen(port, () => {
+ console.log(`App listening on port ${port}!`);
+ setInterval(() => {
+    io.sockets.emit('update', users);
+  }, 100);
+});
+```
+
+Test the app, server and client. The cursors should sync, using your own server logic.
