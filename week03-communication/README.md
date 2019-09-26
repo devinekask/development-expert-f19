@@ -204,6 +204,8 @@ You should see the messages appear in your client app as well. If you open up a 
 
 Real-time shared data can be more than chat messages. In our next app, we'll be sharing our cursor coordinates through a websocket server.
 
+![multiple cursors moving accross the screen](images/shared-cursors.gif)
+
 #### Shared cursors client
 
 We'll build the client app first, connecting to an existing server, running on the beamer.
@@ -396,3 +398,6 @@ server.listen(port, () => {
 ```
 
 Test the app, server and client. The cursors should sync, using your own server logic.
+
+### One to One communcation
+
