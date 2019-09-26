@@ -94,3 +94,108 @@ Test the app again. You should see everybody's messages appear in your console a
 Note that the `message` event type is something we chose ourselves. In your own apps, you can choose whichever event type you like (except from some built in types such as `connect`, `ping`, `pong`, ...)
 
 Try to create a more interesting visualization for the socket messages received from the server 🙂.
+
+### Building a server app
+
+In the first part, we focussed on the client side code and connected to a ready-made server. Let's build our own server now!
+
+#### Express
+
+We'll use the express application framework as a basis of our nodejs server. Create a new project folder, and add the express framework to it's dependencies:
+
+```bash
+npm init -y
+npm install express
+```
+
+Create an index.js file in the project root, where you start a basic express server:
+
+```javascript
+const express = require('express');
+const app = express();
+const server = require('http').Server(app);
+const port = process.env.PORT || 8080;
+
+server.listen(port, () => {
+ console.log(`App listening on port ${port}!`);
+});
+```
+
+Add a start script to your package.json which executes the index.js file
+
+```json
+"scripts": {
+  "start": "node index.js"
+},
+```
+
+And run `npm start` to launch the node app. Navigating to http://localhost:8080 should give you a 404-error from express:
+
+![screenshot of a 404 error](images/your-own-server-404.png)
+
+So, how can you host files from your express app? If you [take a look at the docs](https://expressjs.com/en/starter/static-files.html) you'll see that there is an `express.static(root, [options])` middleware you can use.
+
+Create a folder called `public` in your project root, and link the middleware to your express instance:
+
+```javascript
+app.use(express.static('public'));
+```
+
+Put your html file from the previous exercise in this public folder, and make sure you call it "index.html". Restart the server, and you should be able to view the html file. The websocket connection won't work yet, as we still need to handle it...
+
+#### Listening for websocket connections
+
+Next up, we'll need to handle websocket connections to our server. Add socket.io as a dependency to your project:
+
+```
+npm install socket.io
+```
+
+Initialise socket.io and pass in the express server:
+
+```javascript
+const io = require('socket.io')(server);
+```
+
+Next up, add an event listener to handle websocket connections:
+
+```javascript
+io.on('connection', socket => {
+  console.log('connection');
+}); 
+```
+
+As a final step, you'll need to connect to your own server in your html app:
+
+```javascript
+// socket = io.connect(`http://192.168.1.153:8082`);
+socket = io.connect(`/`);
+```
+
+Restart the app, you should see a console.log happening in your server app when you open the html page.
+
+#### Handling messages on the server
+
+There's no logic in place yet to handle the messages from the clients. Let's listen for `message` events on our server and log them:
+
+```javascript
+io.on('connection', socket => {
+  console.log(`Connection`);
+  socket.on(`message`, message => {
+    console.log(`Received message: ${message}`);
+  });
+});
+```
+
+When you restart the app, you'll see the messages from the browser appear in the server console!
+
+Finally, we'll be forwarding the messages to all connected clients. There's an easy way to do this in socket.io: using `io.socket.emit()` you can broadcast a message to everyone. Use the same event type as a first parameter, and pass in the incoming message object:
+
+```javascript
+socket.on(`message`, message => {
+  console.log(`Received message: ${message}`);
+  io.sockets.emit(`message`, message);
+});
+```
+
+You should see the messages appear in your client app as well. If you open up a second browser window, you should see the messages from one window appear in all windows. As a final test, you can try connecting to the server of one of your peers: use their ip-address instead of localhost. Use <kbd>option</kbd> + click on your wifi icon to view your ip address. You might want to disable your firewall in your Security & Privacy settings.
