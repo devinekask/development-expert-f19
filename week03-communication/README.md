@@ -199,3 +199,142 @@ socket.on(`message`, message => {
 ```
 
 You should see the messages appear in your client app as well. If you open up a second browser window, you should see the messages from one window appear in all windows. As a final test, you can try connecting to the server of one of your peers: use their ip-address instead of localhost. Use <kbd>option</kbd> + click on your wifi icon to view your ip address. You might want to disable your firewall in your Security & Privacy settings.
+
+### Shared cursors app
+
+Real-time shared data can be more than chat messages. In our next app, we'll be sharing our cursor coordinates through a websocket server.
+
+#### Shared cursors client
+
+We'll build the client app first, connecting to an existing server, running on the beamer.
+
+Create a new html file, where you load socket.io and connect a socket connection to the professor's server.
+
+In your `init()` function, add an event listener to the `mousemove` event:
+
+```javascript
+window.addEventListener(`mousemove`, e => handleMouseMove(e));
+```
+
+In your `handleMouseMove` listener, you'll send an `update` event to the server, with the relative mouse position as it's payload:
+
+```javascript
+const handleMouseMove = e => {
+  if (socket.connected) {
+    socket.emit(`update`, {
+      x: e.clientX / window.innerWidth,
+      y: e.clientY / window.innerHeight
+    });
+  }
+};
+```
+
+Test the app. You should see your cursor move on the beamer app.
+
+#### Rendering cursors
+
+The server is broadcasting cursor positions to all connected clients. This way, you can visualise all cursors in your own client app.
+
+First of all, add a listener for the `update` event on your socket connection:
+
+```javascript
+socket.on(`update`, users => {
+  console.log(users);
+});
+```
+
+Reload the browser. You should see an incoming object, containing unique ids and coordinates:
+
+```javascript
+{
+  Sstf83sdx28FU1ZOAAAA: {
+    id: "Sstf83sdx28FU1ZOAAAA"
+    x: 0.058486238532110095
+    y: 0.4036363636363636
+  },
+  j2jqcHWkBUnj7OB1AAAF: {
+    id: "j2jqcHWkBUnj7OB1AAAF"
+    x: 0.9962616822429906
+    y: 0.38545454545454544
+  }
+}
+```
+
+We will loop through these users with a `for ... in... ` loop, and move a div-block accordingly. We can use the unique ids as an id for the div-block, and create a new div if it doesn't exist yet:
+
+```javascript
+for(let clientId in users) {
+  let $cursor = document.querySelector(`#cursor-${clientId}`);
+  if(!$cursor) {
+    $cursor = document.createElement(`div`);
+    $cursor.classList.add(`cursor`);
+    $cursor.setAttribute(`id`, `cursor-${clientId}`);
+    document.body.appendChild($cursor);
+  }
+  $cursor.style.left = `${users[clientId].x * window.innerWidth}px`;
+  $cursor.style.top = `${users[clientId].y * window.innerHeight}px`;
+}
+```
+
+Add some basic styling for those cursor divs:
+
+```css
+.cursor {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  margin-left: -.5rem;
+  margin-right: -.5rem;
+  background: red;
+  border-radius: 50% 50%;
+  transition: top .1s, left .1s;
+}
+```
+
+Test the app. You should see red circles move accross the screen!
+
+#### Removing old cursors
+
+Right now, when a client disconnect, it's cursor will remain on your screen. You'll need to remove that div from the DOM.
+
+In the `update` event, you'll only get the connected clients. By comparing the list of ids with the previous list of ids, you can check which clients are no longer present.
+
+First of all, create a global variable called `socketIds`. Initialize it as an empty Array:
+
+```javascript
+let socketIds = [];
+```
+
+In the update handler, store the new socket ids in a const. You can get the keys from the `users` object, by using the `Object.keys(...)` method:
+
+```javascript
+const currentSocketIds = Object.keys(users);
+```
+
+Get a list of the disconnected clients, by filtering out the socketIds from the previous update which are not present in the currentSocketIds.
+
+```javascript
+const disconnectedSocketIds = socketIds.filter(clientId => {
+  return currentSocketIds.indexOf(clientId) === -1;
+});
+```
+
+Loop through these socket ids, and remove the corresponding div block from the DOM:
+
+```javascript
+disconnectedSocketIds.forEach(clientId => {
+  const $cursor = document.querySelector(`#${clientId}`);
+  if($cursor) {
+    $cursor.parentNode.removeChild($cursor);
+  }
+});
+```
+
+Finally, set the global `socketIds` variable equal to the `currentSocketIds` so you can compare them in the next call.
+
+```javascript
+socketIds = currentSocketIds;
+```
+
+Test the app, using multiple windows. When you close a window, it's corresponding cursor should disappear from your other windows.
+

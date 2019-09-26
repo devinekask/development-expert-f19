@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Send Me A Message</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+  </head>
+  <body>
+    <h1 id="connectionUrl" class="code"></h1>
+    <div id="messages"></div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="assets/js//libs/randomColor.js"></script>
+    <script>
+      {
+        const connectionUrlEl = document.querySelector(`#connectionUrl`);
+        let socket, socketIds = [];
+
+        const init = () => {
+          connect();
+          window.addEventListener(`mousemove`, e => {
+            socket.emit(`update`, {
+              x: e.clientX / window.innerWidth,
+              y: e.clientY / window.innerHeight
+            });
+          });
+          window.addEventListener(`touchmove`, e => {
+            socket.emit(`update`, {
+              x: e.touches[0].clientX / window.innerWidth,
+              y: e.touches[0].clientY / window.innerHeight
+            });
+          });
+        };
+
+        const connect = () => {
+          socket = io.connect(`/`);
+
+          socket.on(`connectionUrl`, connectionUrl => {
+            connectionUrlEl.innerHTML = `socket = <span class="orange">io</span>.connect(<span class="green">\`${connectionUrl ? connectionUrl : '\\'}\`</span>);`;
+          });
+
+          socket.on(`update`, users => {
+            const currentSocketIds = [];
+            console.log(users);
+            for(let clientId in users) {
+              currentSocketIds.push(clientId);
+              let $bal = document.querySelector(`#bal${clientId}`);
+              if(!$bal) {
+                $bal = document.createElement(`div`);
+                $bal.classList.add(`bal`);
+                $bal.setAttribute(`id`, `bal${clientId}`);
+                $bal.style.background = randomColor();
+                document.body.appendChild($bal);
+              }
+              $bal.style.left = `${users[clientId].x * window.innerWidth}px`;
+              $bal.style.top = `${users[clientId].y * window.innerHeight}px`;
+            }
+            //which sockets are no longer there?
+            const disconnectedClients = socketIds.filter(clientId => {
+              return currentSocketIds.indexOf(clientId) === -1;
+            });
+            disconnectedClients.forEach(clientId => {
+              const $bal = document.querySelector(`#bal${clientId}`);
+              if($bal) {
+                $bal.parentNode.removeChild($bal);
+              }
+            });
+
+            socketIds = currentSocketIds;
+          });
+        };
+
+        init();
+      }
+    </script>
+  </body>
+</html>
