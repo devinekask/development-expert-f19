@@ -289,7 +289,7 @@ Johnny five uses a module called serialport, which uses some C++ code to send me
 Luckely, there's a package doing just that: `electron-rebuild`. Add this package to your devDependencies:
 
 ```bash
-npm install electron-rebuild --dev
+npm install electron-rebuild --save-dev
 ```
 
 Run the electron-rebuild script to recompile the native modules for use with Electron:
