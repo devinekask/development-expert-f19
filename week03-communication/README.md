@@ -551,3 +551,16 @@ document.getElementById('qr').innerHTML = qr.createImgTag(4);
 ```
 
 Load the desktop page. Make sure to load it with your computer's ip address (instead of localhost), that way the QR code will contain the ip address in it's url.
+
+### Where to go from here
+
+- Try building a link between an arcade javascript game and your smartphone as controller.
+- Use your smartphone's [gyroscope as an input](https://developer.mozilla.org/en-US/docs/Web/API/DeviceOrientationEvent).
+- Try integrating Arduino / Johnny five in this setup. Control hardware from your phone?
+
+## WebRTC
+
+As you can read on https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API:
+
+> **WebRTC** (Web Real-Time Communications) is a technology which enables Web applications and sites to capture and optionally stream audio and/or video media, as well as to exchange arbitrary data between browsers without requiring an intermediary. The set of standards that comprise WebRTC makes it possible to share data and perform teleconferencing peer-to-peer, without requiring that the user installs plug-ins or any other third-party software.
+
