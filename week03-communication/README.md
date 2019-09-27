@@ -81,6 +81,8 @@ const handleSubmit = e => {
 
 The server running on the beamer, also sends back messages. Everytime a client sends a message, the server will forward that message to all connected clients. Which means you can display everybody's messages in your app as well.
 
+![scheme showing message sent to server get broadcasted back](images/messages-client-server.png)
+
 In our client-server application, the server will emit `message` events to all connected clients. So, you'll need to listen for this event on your socket object. Hook up an event listener in your `init()` function:
 
 ```javascript
@@ -399,5 +401,7 @@ server.listen(port, () => {
 
 Test the app, server and client. The cursors should sync, using your own server logic.
 
-### One to One communcation
+### One to one communcation
+
+One of the applications of websockets, is using your smartphone as an extra input control of a web experience. For this to work, you need to set up a communication channel between the smartphone, server and your desktop browser.
 
