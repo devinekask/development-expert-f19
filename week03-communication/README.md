@@ -418,8 +418,9 @@ We'll have two different apps:
 
 When starting up the mobile part, we'll need to input the desktop id some how. As a quick and easy way, we'll pass the desktop id in the querystring of the mobile page:
 
-| **Desktop**                  | **Remote**                                  |
-|------------------------------|---------------------------------------------|
-| index.html socket ID: abc123 | controller.html?id=abc123 socket ID: xyz987 |
+| **Desktop**        | **Remote**                 |
+|--------------------|----------------------------|
+| index.html         | controller.html?id=abc123  |
+| socket ID: abc123  | socket ID: xyz987          |
 
 With every message of our remote to the server, we will pass the socket id of the corresponding desktop app as well.
