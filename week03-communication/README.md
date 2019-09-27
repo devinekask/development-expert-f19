@@ -472,7 +472,8 @@ To make things a little easier for the next app we'll build (the controller), we
 
 ```javascript
 socket.on(`connect`, () => {
-  $url.textContent = `controller.html?id=${socket.id}`;
+  let url = `${new URL(`/controller.html?id=${socket.id}`, window.location)}`;
+  $url.textContent = url;
 });
 ```
 
@@ -521,3 +522,32 @@ window.addEventListener(`touchmove`, e => {
 Open the desktop page in one window and the controller page in another window. Make sure to include the id displayed in the desktop page in the querystring. You should be able to move the cursor from the controller page.
 
 If you want to test control from an external device, you'll need to connect with the IP address of your server. E.g. http://192.168.0.100:8080/controller.html?id=C4wHK_3R27HtDpjDAAAA
+
+#### QR Code
+
+Typing the entire URL, including the id is a bit annoying on a smartphone. In this case, scanning a QR code might be a bit easier.
+
+Include the [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) library in your desktop.html:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+```
+
+Add a div which will contain the qr code:
+
+```html
+<div id="qr"></div>
+```
+
+When the socket connects, we'll show the URL with a QR code:
+
+```javascript
+const typeNumber = 4;
+const errorCorrectionLevel = 'L';
+const qr = qrcode(typeNumber, errorCorrectionLevel);
+qr.addData(url);
+qr.make();
+document.getElementById('qr').innerHTML = qr.createImgTag(4);
+```
+
+Load the desktop page. Make sure to load it with your computer's ip address (instead of localhost), that way the QR code will contain the ip address in it's url.

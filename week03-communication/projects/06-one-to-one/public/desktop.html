@@ -9,8 +9,10 @@
 </head>
 <body>
   <h1 id="url" class="code"></h1>
+  <div id="qr"></div>
   <div id="cursor" class="cursor"></div>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <script>
   {
     const $cursor = document.querySelector('#cursor');
@@ -23,6 +25,13 @@
       socket.on(`connect`, () => {
         let url = `${new URL(`/controller.html?id=${socket.id}`, window.location)}`;
         $url.textContent = url;
+
+        const typeNumber = 4;
+        const errorCorrectionLevel = 'L';
+        const qr = qrcode(typeNumber, errorCorrectionLevel);
+        qr.addData(url);
+        qr.make();
+        document.getElementById('qr').innerHTML = qr.createImgTag(4);
       });
       socket.on(`update`, (data) => {
         $cursor.style.left = `${data.x * window.innerWidth}px`;
