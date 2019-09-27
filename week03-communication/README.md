@@ -81,7 +81,7 @@ const handleSubmit = e => {
 
 The server running on the beamer, also sends back messages. Everytime a client sends a message, the server will forward that message to all connected clients. Which means you can display everybody's messages in your app as well.
 
-![scheme showing message sent to server get broadcasted back](images/messages-client-server.png)
+![schema showing message sent to server get broadcasted back](images/messages-client-server.png)
 
 In our client-server application, the server will emit `message` events to all connected clients. So, you'll need to listen for this event on your socket object. Hook up an event listener in your `init()` function:
 
@@ -405,3 +405,21 @@ Test the app, server and client. The cursors should sync, using your own server 
 
 One of the applications of websockets, is using your smartphone as an extra input control of a web experience. For this to work, you need to set up a communication channel between the smartphone, server and your desktop browser.
 
+Instead of a server which broadcasts messages to all connected clients, the server will need to messages it receives from your smartphone to your smartphone. For this to work, your smartphone and desktop apps need to know eachother's socket ids.
+
+![schema showing one to one communication](images/messages-one-on-one.png)
+
+#### Communication structure
+
+We'll have two different apps:
+
+1. A desktop app, connecting to the server
+2. A mobile app, connecting to the server, with knowledge of the desktop id
+
+When starting up the mobile part, we'll need to input the desktop id some how. As a quick and easy way, we'll pass the desktop id in the querystring of the mobile page:
+
+| **Desktop**                  | **Remote**                                  |
+|------------------------------|---------------------------------------------|
+| index.html socket ID: abc123 | controller.html?id=abc123 socket ID: xyz987 |
+
+With every message of our remote to the server, we will pass the socket id of the corresponding desktop app as well.
