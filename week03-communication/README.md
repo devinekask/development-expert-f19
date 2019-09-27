@@ -424,3 +424,100 @@ When starting up the mobile part, we'll need to input the desktop id some how. A
 | socket ID: abc123  | socket ID: xyz987          |
 
 With every message of our remote to the server, we will pass the socket id of the corresponding desktop app as well.
+
+#### Server app
+
+Create new Express + socket.io server project, with a static directory for your html files.
+
+This will be a pretty basic socket server, which will send update events to a target user. In the previous app, our message handlers received a message type and a payload (e.g. `update` and `data`). This server app will expect an additional parameter, the target socket id. This is used to forward the incoming payload to just one target socket id (instead of broadcasting it to all sockets).
+
+```javascript
+const users = {};
+
+io.on('connection', socket => {
+  console.log(`Connection`);
+  users[socket.id] = {
+    id: socket.id
+  };
+  socket.on('update', (targetSocketId, data) => {
+    if (!users[targetSocketId]) {
+      return; // do nothing
+    }
+    // forward the update to that particular user
+    socket.to(targetSocketId).emit('update', data);
+  });
+  socket.on('disconnect', () => {
+    console.log('client disconnected');
+    delete users[socket.id];
+  });  
+});
+```
+
+#### Desktop client
+
+The desktop page will show a ball, which we'll control using a seperate controller client. We will send update events with x and y coordinates.
+
+Create a new html page, with one div, with class `cursor` (cfr previous exercise). We'll just show this one cursor, no other clients (because we are building a one-to-one application).
+
+Listen for the `update` event, and adjust the position of the `cursor` based on the incoming data:
+
+```javascript
+socket.on(`update`, (data) => {
+  $cursor.style.left = `${data.x * window.innerWidth}px`;
+  $cursor.style.top = `${data.y * window.innerHeight}px`;
+});
+```
+
+To make things a little easier for the next app we'll build (the controller), we'll display the socket id on the page as wel. Add a DOM element to the page, reference it in your javascript code, and display the url with socket id for the controller, when the socket connects:
+
+```javascript
+socket.on(`connect`, () => {
+  $url.textContent = `controller.html?id=${socket.id}`;
+});
+```
+
+#### Controller client
+
+Create a second html page. This page expects the target socket id (aka a socket id of a desktop page) to be in the querystring. We will check for this first:
+
+```javascript
+let socket, targetSocketId;
+
+const init = () => {
+  targetSocketId = getUrlParameter(`id`);
+  if (!targetSocketId) {
+    alert(`Missing target ID in querystring`);
+    return;
+  }
+};
+
+const getUrlParameter = name => {
+  name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+  const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+  const results = regex.exec(location.search);
+  return results === null ? false : decodeURIComponent(results[1].replace(/\+/g, ' '));
+};
+
+init();
+```
+
+Create a socket connection at the end of the init function. Listen for a `mousemove` and / or `touchmove` event on the window object, and send the event object's coordinates to the server, including the targetSocketId:
+
+```javascript
+window.addEventListener(`mousemove`, e => {
+  socket.emit(`update`, targetSocketId, {
+    x: e.clientX / window.innerWidth,
+    y: e.clientY / window.innerHeight
+  });
+});
+window.addEventListener(`touchmove`, e => {
+  socket.emit(`update`, targetSocketId, {
+    x: e.touches[0].clientX / window.innerWidth,
+    y: e.touches[0].clientY / window.innerHeight
+  });
+});
+```
+
+Open the desktop page in one window and the controller page in another window. Make sure to include the id displayed in the desktop page in the querystring. You should be able to move the cursor from the controller page.
+
+If you want to test control from an external device, you'll need to connect with the IP address of your server. E.g. http://192.168.0.100:8080/controller.html?id=C4wHK_3R27HtDpjDAAAA

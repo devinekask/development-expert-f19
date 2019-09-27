@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Controller</title>
+</head>
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  {
+
+    let socket, targetSocketId;
+
+    const init = () => {
+      targetSocketId = getUrlParameter(`id`);
+      if (!targetSocketId) {
+        alert(`Missing target ID in querystring`);
+        return;
+      }
+      connect();
+      window.addEventListener(`mousemove`, e => {
+        socket.emit(`update`, targetSocketId, {
+          x: e.clientX / window.innerWidth,
+          y: e.clientY / window.innerHeight
+        });
+      });
+      window.addEventListener(`touchmove`, e => {
+        socket.emit(`update`, targetSocketId, {
+          x: e.touches[0].clientX / window.innerWidth,
+          y: e.touches[0].clientY / window.innerHeight
+        });
+      });
+    };
+
+    const connect = () => {
+      socket = io.connect(`/`);
+    };
+
+    const getUrlParameter = name => {
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+      const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+      const results = regex.exec(location.search);
+      return results === null ? false : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>

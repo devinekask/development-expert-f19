@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Desktop</title>
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+  <h1 id="url" class="code"></h1>
+  <div id="cursor" class="cursor"></div>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  {
+    const $cursor = document.querySelector('#cursor');
+    const $url = document.querySelector('#url');
+
+    let socket;
+
+    const init = () => {
+      socket = io.connect(`/`);
+      socket.on(`connect`, () => {
+        $url.textContent = `controller.html?id=${socket.id}`;
+      });
+      socket.on(`update`, (data) => {
+        $cursor.style.left = `${data.x * window.innerWidth}px`;
+        $cursor.style.top = `${data.y * window.innerHeight}px`;
+      });
+    }
+
+    init();
+  }
+  </script>
+</body>
+</html>
