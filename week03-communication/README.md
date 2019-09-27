@@ -564,3 +564,79 @@ As you can read on https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API:
 
 > **WebRTC** (Web Real-Time Communications) is a technology which enables Web applications and sites to capture and optionally stream audio and/or video media, as well as to exchange arbitrary data between browsers without requiring an intermediary. The set of standards that comprise WebRTC makes it possible to share data and perform teleconferencing peer-to-peer, without requiring that the user installs plug-ins or any other third-party software.
 
+### Accessing your webcam from javascript
+
+Create a new project, with an express server and a static public folder. Inside of the folder, you'll create an index.html and a video tag. You'll also link to a WebRTC polyfill:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Webcam</title>
+</head>
+<body>
+  <video id="video" autoplay playsinline></video>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+</body>
+</html>
+```
+
+The API call we will use to access the webcam is [MediaDevices.getUserMedia()](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia). 
+
+Let's show our webcam stream in the video tag:
+
+```javascript
+const $video = document.getElementById('video');
+
+const init = async () => {
+  const constraints = {
+    audio: false,
+    video: true
+  };
+  const stream = await navigator.mediaDevices.getUserMedia(constraints);
+  $video.srcObject = stream;
+};
+
+init();
+```
+
+Test the app, you should see your webcam feed in the browser.
+[Read up upon the constraints option](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#Parameters) - which allows you to specify preferred resolutions and cameras.
+
+#### Security
+
+Viewing the app through localhost works like a charm. However, if you try accessing the page through your ip address, it won't work:
+
+> (index):21 Uncaught (in promise) TypeError: Cannot read property 'getUserMedia' of undefined
+
+Webcam access is disabled on non-secure (aka non-https) origins. If you'd want to test your app on your smartphone, accessing it through your laptop's ip address, you'll need to run an http***s*** server.
+
+First of all, you'll need to create a self-signed SSL certificate. Execute the following command in your server root:
+
+```bash
+openssl req -nodes -new -x509 -keyout server.key -out server.cert
+```
+
+You'll need to answer a couple of questions, after which a server.key (the private key) and server.cert (the certificate) file get created.
+
+Update the server initialization code to use the SSL certificate:
+
+```javascript
+const fs = require('fs');
+const options = {
+  key: fs.readFileSync('./server.key'),
+  cert: fs.readFileSync('./server.cert')
+};
+const server = require('https').Server(options, app); // httpS instead of http
+```
+
+Start the server and test the app through the IP address and https (e.g https://172.20.64.105:8080/). You should see a warning message (screenshot from Google Chrome):
+
+[SSL Warning Chrome](images/ssl-warning-chrome.png)
+
+Click "Advanced"... and choose to proceed to the page. You should be able to access the webcam now.
+
+Try accessing it on your smartphone, through the IP address. See if you can force the webcam to use the front or back facing camera of your phone, by setting the constraints in the code.

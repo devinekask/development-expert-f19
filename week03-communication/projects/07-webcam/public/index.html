@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Webcam</title>
+</head>
+<body>
+  <video id="video" autoplay playsinline></video>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script>
+  {
+    const $video = document.getElementById('video');
+
+    const init = async () => {
+      const constraints = {
+        audio: false,
+        video: true
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      $video.srcObject = stream;
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>
