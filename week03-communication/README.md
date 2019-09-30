@@ -772,6 +772,8 @@ peerConnection.addEventListener(`addstream`, e => {
 
 Test the app. You should see the video stream from the beamer app on your system.
 
+![2 video streams playing](images/webrtc-app.jpg)
+
 #### Sending a call
 
 In the previous exercise you've answered an incoming call. The app running on the beamer automatically called you automatically and you had to answer that call.
