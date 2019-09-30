@@ -771,3 +771,67 @@ peerConnection.addEventListener(`addstream`, e => {
 ```
 
 Test the app. You should see the video stream from the beamer app on your system.
+
+#### Sending a call
+
+In the previous exercise you've answered an incoming call. The app running on the beamer automatically called you automatically and you had to answer that call.
+
+Let's switch roles: you'll need to initiate a call and the beamer app will answer it.
+
+Duplicate the previous project. The beamer app will be another server, which switched roles from caller to callee.
+
+Create listeners for for 2 other socket events:
+
+- `peerWantsACall`: will receive the socket id from the beamer app
+- `peerAnswer`: will receive the peer answer from the beamer app
+
+```javascript
+// socket.on(`peerOffer`, handlePeerOffer);
+socket.on(`peerWantsACall`, handlePeerWantsACall);
+socket.on(`peerAnswer`, handlePeerAnswer);
+```
+
+##### Peer Wants A Call
+
+In the `peerWantsACall` handler, you get the peer id from the beamer app. You can base yourself on the handlePeerOffer function from the previous exercise. Difference is you're not receiving an offer, as _you_ will be the one creating an offer inside this handler:
+
+```javascript
+const handlePeerWantsACall = async (peerId) => {
+  console.log('peerId:', peerId);
+  peerConnection = new RTCPeerConnection(servers);
+  // etc...
+}
+```
+
+Comment out the part where you set the remote description and created an answer:
+
+```javascript
+// await peerConnection.setRemoteDescription(offer);
+// const answer = await peerConnection.createAnswer();
+// socket.emit(`peerAnswer`, peerId, answer);
+// peerConnection.setLocalDescription(answer);
+```
+
+Instead, you'll need to do the following:
+
+1. Create an offer
+2. Set that offer as the LocalDescription
+3. Send that offer to the signalling server:
+
+```javascript
+socket.emit(`peerOffer`, peerId, offer);
+```
+
+[Check the docs on MDN on how to create an offer](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection)
+
+##### Handle Peer Answer
+
+Once you're creating a valid offer, you'll receive an answer through the signalling server, triggering the `handlePeerAnswer` handler. In this handler, you'll set the RemoteDescription:
+
+```javascript
+const handlePeerAnswer = (peerId, answer) => {
+  peerConnection.setRemoteDescription(answer);
+};
+```
+
+Test the app. It should work like the previous one (except now you are the caller instead of the callee).

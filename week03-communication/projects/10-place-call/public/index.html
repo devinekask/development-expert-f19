@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Webcam</title>
+  <style>
+    video {
+      width: 100%;
+      max-width: 320px;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay playsinline id="video"></video>
+  <video playsinline autoplay id="peerVideo"></video>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <script>
+  {
+    const $video = document.getElementById('video');
+    const $peerVideo = document.getElementById('peerVideo');
+    const servers = {
+      iceServers: [{
+        urls: `stun:stun.l.google.com:19302`
+      }]
+    };
+
+    let myStream;
+    let socket;
+    let peerConnection;
+
+    const init = async () => {
+      const constraints = {
+        audio: false,
+        video: true
+      };
+      myStream = await navigator.mediaDevices.getUserMedia(constraints);
+      $video.srcObject = myStream;
+      initSocket();
+    };
+
+    const initSocket = () => {
+      socket = io.connect(`https://172.20.64.62:8081`);
+      socket.on(`connect`, () => console.log(socket.id));
+      // socket.on(`peerOffer`, handlePeerOffer);
+      socket.on(`peerWantsACall`, handlePeerWantsACall);
+      socket.on(`peerAnswer`, handlePeerAnswer);
+      socket.on(`peerIce`, handlePeerIce);
+    };
+
+    const handlePeerWantsACall = async (peerId) => {
+      console.log('peerId:', peerId);
+      peerConnection = new RTCPeerConnection(servers);
+
+      peerConnection.addEventListener(`addstream`, e => {
+        if (!e.stream) {
+          return;
+        }
+        $peerVideo.srcObject = e.stream;
+      });
+
+      peerConnection.addStream(myStream);
+
+      // await peerConnection.setRemoteDescription(offer);
+      // const answer = await peerConnection.createAnswer();
+      // socket.emit(`peerAnswer`, peerId, answer);
+      // peerConnection.setLocalDescription(answer);
+      const offer = await peerConnection.createOffer();
+      socket.emit(`peerOffer`, peerId, offer);
+      peerConnection.setLocalDescription(offer);
+
+      peerConnection.addEventListener(`icecandidate`, e => {
+        if (!e.candidate) {
+          return;
+        }
+        // peerId is de socket ID of the beamer
+        socket.emit(`peerIce`, peerId, e.candidate);
+      });
+    };
+
+    const handlePeerAnswer = (peerId, answer) => {
+      peerConnection.setRemoteDescription(answer);
+    };
+
+    const handlePeerIce = (peerId, ice) => {
+      if (!ice.candidate) {
+        return;
+      }
+      peerConnection.addIceCandidate(ice);
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>
