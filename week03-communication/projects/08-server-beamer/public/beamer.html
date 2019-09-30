@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Webcam</title>
+    <style>
+      body, html { margin: 0; padding: 0; }
+      :root {
+        background: #FFF;
+        height: 100%;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, Avenir Next, Avenir, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        color: #fff;
+        background:#141931;
+        min-height: 100vh;
+        text-align: center;
+        padding-top: 1rem;
+      }
+      h1 {
+        background: #34fdfe;
+        color: #000;
+        display: inline-block;
+        line-height: 1em;
+        margin-top: 1em;
+        padding: .4em;
+      }
+      .frames {
+        display: flex;
+        flex-flow: row wrap;
+        align-items: center;
+        justify-content: center;
+      }
+      video {
+        background: black;
+        width: 320px;
+        height: 240px;
+      }
+      .frame {
+        position: relative;
+        z-index: 1;
+        margin: 1.5rem;
+      }
+      .frame::after {
+        content:'';
+        height: 256px;
+        width:300px;
+        display:block;
+        position: absolute;
+        top:0;
+        left:-3%;
+        z-index: -1;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 90 90'%3E%3Ccircle fill='%23ffffff' fill-opacity='0.8' cx='45' cy='45' r='10'/%3E%3Cg fill='%23ffffff' fill-opacity='0.8'%3E%3Ccircle cx='0' cy='90' r='10'/%3E%3Ccircle cx='90' cy='90' r='10'/%3E%3Ccircle cx='90' cy='0' r='10'/%3E%3Ccircle cx='0' cy='0' r='10'/%3E%3C/g%3E%3C/svg%3E");
+        transform:rotate(-3deg);
+      }
+      .frame::before {
+        content:'';
+        height:102%;
+        width:95%;
+        display:block;
+        position: absolute;
+        top:-5px;
+        left: 5%;
+        z-index: -1;
+        transition:0.6s all ease;
+        background: #555c7e; /*02FDFF*/
+        transform:rotate(3deg);
+      }
+      .frame video {
+        /* transform:rotate(5deg); */
+        /* transition:0.2s all ease; */
+        border:4px double #E77470;
+      }
+      .frame--master video { border-color: #02FDFF; }
+    </style>
+  </head>
+  <body>
+    <h1 id="connectionUrl"></h1>
+    <div id="videos" class="frames">
+      <div class="frame frame--master">
+        <video playsinline autoplay id="video"></video>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script>
+    {
+      const $video = document.querySelector(`#video`),
+      $videos = document.querySelector(`#videos`),
+      connectionUrlEl = document.querySelector(`#connectionUrl`),
+      servers = {
+        iceServers: [{
+          urls: `stun:stun.l.google.com:19302`
+        }]
+      };
+      let socket = false,
+        myStream = false;
+      
+      const peerConnectionHandlers = {};
+
+      const init = async () => {
+        const constraints = {
+          audio: false,
+          video: true
+        };
+        myStream = await navigator.mediaDevices.getUserMedia(constraints);
+        $video.srcObject = myStream;
+        initSocket();
+      };
+
+      const initSocket = () => {
+        socket = io.connect(`/`);
+        socket.on(`connect`, () => console.log(socket.id));
+        socket.on(`connectionUrl`, connectionUrl => {
+          connectionUrlEl.textContent = `socket = io.connect(\`${connectionUrl}\`);`;
+        });
+
+        // we receive a list of all users
+        // call all of them, except ourselves
+        socket.on(`users`, users => {
+          console.log(`Users: `, users);
+          for (let socketId in users) {
+            if (socketId !== socket.id) { // we don't call ourselves
+              callPeer(socketId);
+            }
+          }
+        });
+
+        // 1) New external connect, call that peer
+        socket.on(`peerConnection`, callPeer);
+
+        // 2) Peer has sent an answer, handle it
+        socket.on(`peerAnswer`, handlePeerAnswer);
+
+        // 3) Received an ice candidate, handle it
+        socket.on(`peerIce`, handlePeerIce);
+        socket.on(`peerDisconnect`, handlePeerDisconnect);
+      };
+
+      const callPeer = peerId => {
+        const peerConnectionHandler = new PeerConnectionHandler(peerId);
+        peerConnectionHandlers[peerId] = peerConnectionHandler;
+        peerConnectionHandler.callPeer();
+      };
+
+      const handlePeerAnswer = (peerId, answer) => {
+        if (!peerConnectionHandlers[peerId]) {
+          return;
+        }
+        const peerConnectionHandler = peerConnectionHandlers[peerId];
+        peerConnectionHandler.setRemoteDescription(answer);
+      };
+
+      const handlePeerIce = (peerId, ice) => {
+        if (!peerConnectionHandlers[peerId]) {
+          return;
+        }
+        const peerConnectionHandler = peerConnectionHandlers[peerId];
+        peerConnectionHandler.addIceCandidate(ice);
+      };
+
+      const handlePeerDisconnect = (peerId) => {
+        if (!peerConnectionHandlers[peerId]) {
+          return;
+        }
+        const peerConnectionHandler = peerConnectionHandlers[peerId];
+        peerConnectionHandler.close();
+        delete peerConnectionHandlers[peerId];
+      };
+
+      class PeerConnectionHandler {
+        constructor(peerId) {
+          this.peerId = peerId;
+          this.peerConnection = new RTCPeerConnection(servers);;
+
+          // We maken een nieuw video element voor elke nieuwe peer
+          this.peerFrame = document.createElement(`div`);
+          this.peerFrame.classList.add(`frame`);
+          this.peerFrame.dataset.socket = this.peerId;
+          this.peerVideo = document.createElement(`video`);
+          this.peerVideo.autoplay = true;
+          this.peerVideo.muted = true;
+          this.peerVideo.playsinline = true;
+          this.peerFrame.appendChild(this.peerVideo);
+
+          this.icecandidateHandler = this.icecandidateHandler.bind(this);
+          this.addstreamHandler = this.addstreamHandler.bind(this);
+          this.closeHandler = this.closeHandler.bind(this);
+
+          this.peerConnection.addEventListener(`icecandidate`, this.icecandidateHandler);
+          this.peerConnection.addEventListener(`addstream`, this.addstreamHandler);
+          this.peerConnection.addEventListener(`close`, this.closeHandler);
+        }
+
+        async callPeer() {
+          this.peerConnection.addStream(myStream);
+          const offer = await this.peerConnection.createOffer();
+          socket.emit(`peerOffer`, this.peerId, offer);
+          this.peerConnection.setLocalDescription(offer);
+        }
+
+        setRemoteDescription(...args) {
+          return this.peerConnection.setRemoteDescription(...args);
+        }
+
+        addIceCandidate(...args) {
+          this.peerConnection.addIceCandidate(...args);
+        }
+
+        close() {
+          console.log(`close peerconnection`);
+          if (this.peerConnection) {
+            this.peerConnection.close();
+            this.closeHandler();
+          }
+        }
+
+        closeHandler() {
+          console.log(`closeHandler`);
+          if (this.peerConnection) {
+            this.peerConnection.removeEventListener(`icecandidate`, this.icecandidateHandler);
+            this.peerConnection.removeEventListener(`addstream`, this.addstreamHandler);
+            this.peerConnection = false;
+          }
+          if (this.peerFrame) {
+            if (this.peerFrame.parentNode) {
+              this.peerFrame.parentNode.removeChild(this.peerFrame);
+            }
+            this.peerFrame = false;
+            this.peerVideo = false;
+          }
+        }
+
+        icecandidateHandler(e) {
+          if (!e.candidate) {
+            return;
+          }
+          socket.emit(`peerIce`, this.peerId, e.candidate);
+        }
+
+        addstreamHandler(e) {
+          if (!e.stream) {
+            return;
+          }
+          $videos.insertBefore(this.peerFrame, $videos.firstChild);
+          if ("srcObject" in video) {
+            this.peerVideo.srcObject = e.stream;
+          } else {
+            this.peerVideo.src = window.URL.createObjectURL(e.stream);
+          }
+        };
+      }
+
+      init();
+    }
+    </script>
+  </body>
+</html>

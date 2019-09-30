@@ -635,8 +635,105 @@ const server = require('https').Server(options, app); // httpS instead of http
 
 Start the server and test the app through the IP address and https (e.g https://172.20.64.105:8080/). You should see a warning message (screenshot from Google Chrome):
 
-[SSL Warning Chrome](images/ssl-warning-chrome.png)
+![SSL Warning Chrome](images/ssl-warning-chrome.png)
 
 Click "Advanced"... and choose to proceed to the page. You should be able to access the webcam now.
 
 Try accessing it on your smartphone, through the IP address. See if you can force the webcam to use the front or back facing camera of your phone, by setting the constraints in the code.
+
+### Peer to peer media streaming
+
+What if we want to send our webcam feed to another computer over the internet? We will need to make sure the two computers know how to connect to eachother, what video codecs they support and open a communication channel to stream the data to one another.
+
+First of all, [read through "Lifetime of a WebRTC session](https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Session_lifetime#Establishing_a_connection) to familiarize yourself with a couple of concepts and how a WebRTC session is set up.
+
+#### Connecting to an existing signalling server
+
+In your first application, you'll set up a peer connection with the professor's computer.
+
+Start off from the [08-answer-call-start](08-answer-call-start) starter project:
+
+1. Install the node_modules using npm or yarn
+2. Create an ssl certificate in the project root
+3. Launch the project with npm start.
+4. Navigate to the url displayed in your terminal (= your server). Make sure to accept the SSL certificate.
+
+There's already some code in place in your start project: a webcam connection is made and the video displays on the screen. Once the camera is running, there's a call to an empty `initSocket()` function. There are a couple of consts and variables in place:
+
+- `$video`: an html video element which shows your video stream
+- `$peerVideo`: an html video element which will show the video stream from the beamer app.
+- `servers`: configuration object for the google STUN server
+- `myStream`: your html video stream
+- `socket`: variable which will hold the socket connection to the signalling server
+- `peerConnection`: variable which will hold the RTCPeerConnection object.
+
+There's a signalling server running on the professor's laptop, and it's ip address is displayed on the beamer.
+
+1. Inside of your `initSocket()` function, you'll connect to that address.
+2. Listen for a `peerOffer` on the socket connection:
+
+```javascript
+// beamer calls us with an offer, send back an answer
+socket.on(`peerOffer`, handlePeerOffer);
+```
+
+```javascript
+const handlePeerOffer = (peerId, offer) => {
+  console.log('peerId:', peerId);
+  console.log('offer:', offer);
+};
+```
+
+Test the app. You should receive the peerOffer message.
+
+3. In the `handlePeerOffer` function, you'll need to send an answer to the beamer app.
+
+Create the global RTCPeerConnection instance, passing in the global servers config:
+
+```javascript
+peerConnection = new RTCPeerConnection(servers);
+```
+
+Add your stream to the peerConnection object:
+
+```javascript
+peerConnection.addStream(myStream);
+```
+
+Link the offer to the peerConnection: (note: it is an await, make sure to set the `handlePeerOffer` to an async call):
+
+```javascript
+await peerConnection.setRemoteDescription(offer);
+```
+
+Create the answer:
+
+```javascript
+const answer = await peerConnection.createAnswer();
+```
+
+Send the answer to the signalling server:
+
+```javascript
+socket.emit(`peerAnswer`, peerId, answer);
+```
+
+Link your answer to your peerConnection:
+
+```javascript
+peerConnection.setLocalDescription(answer);
+```
+
+And finally, make sure to handle `icecandidate` events on the peerConnection:
+
+```javascript
+peerConnection.addEventListener(`icecandidate`, e => {
+  if (!e.candidate) {
+    return;
+  }
+  // peerId is de socket ID of the beamer
+  socket.emit(`peerIce`, peerId, e.candidate);
+});
+```
+
+Test the app. Your video stream should appear on the beamer.
