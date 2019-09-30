@@ -20,6 +20,8 @@ Build your own, custom shader for 2D on the web. Learn the basic principles behi
 
 Learn about networking and socket communication. Build client and server side socket logic using socket.io. Share webcam and microphone feeds over the internet using the WebRTC spec.
 
+[Continue to Week 3 - Communication](week03-communication/)
+
 ## Week 4 Artificial Intelligence
 
 What is AI / Machine Learning / Neural networks? How does a neural network work? Use existing models with ml5.js and RunwayML.
