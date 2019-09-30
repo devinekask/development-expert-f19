@@ -837,3 +837,11 @@ const handlePeerAnswer = (peerId, answer) => {
 ```
 
 Test the app. It should work like the previous one (except now you are the caller instead of the callee).
+
+#### Signalling server
+
+Up until now, you've been using a signalling server running on the beamer. The role of this socket server is relay messages between connected clients, helping them discover eachother and send call offers / answers to one another.
+
+You can [view the code of the signalling server](projects/10-server-beamer). Look at the socket logic in place. You'll recognize the messages you've been sending / handling in the previous exercises.
+
+Try to build an app where you show user names or socket ids in a list and where users can initiate a call to one another through an interface. You probably don't need to change that much to the signalling server!
