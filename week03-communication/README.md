@@ -737,3 +737,37 @@ peerConnection.addEventListener(`icecandidate`, e => {
 ```
 
 Test the app. Your video stream should appear on the beamer.
+
+##### Showing the stream from the beamer
+
+The beamer app also sends a stream to all connected clients. Let's handle this incoming stream in your app.
+
+1. Listen for the `peerIce` event on the socket:
+
+```javascript
+socket.on(`peerIce`, handlePeerIce);
+```
+
+2. In the event handler, add the ice candidate to your peerConnection:
+
+```javascript
+const handlePeerIce = (peerId, ice) => {
+  if (!ice.candidate) {
+    return;
+  }
+  peerConnection.addIceCandidate(ice);
+};
+```
+
+3. Once you've done that, you'll receive an `addstream` event on our peerConnection. Listen for this event, right after creating your peerConnection (aka in your handlePeerOffer function)
+
+```javascript
+peerConnection.addEventListener(`addstream`, e => {
+  if (!e.stream) {
+    return;
+  }
+  $peerVideo.srcObject = e.stream;
+});
+```
+
+Test the app. You should see the video stream from the beamer app on your system.
