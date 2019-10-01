@@ -391,6 +391,7 @@ A fun tutorial, applying a lot of the content covered before, can be found at ht
 
 ## Where to go from here
 
+- http://math.hws.edu/graphicsbook/index.html
 - https://github.com/sjfricke/awesome-webgl
 - https://thebookofshaders.com/
 - https://www.august.com.au/blog/animating-scenes-with-webgl-three-js
