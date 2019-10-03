@@ -348,9 +348,18 @@ uniform sampler2D disp;
 The sampling position gets influenced by the intensity value of the displacement texture:
 
 ```csharp
-vec2 distortedPosition = vec2(uv.x + disp.r*effectFactor, uv.y);
+float effectFactor = 0.05;
+vec2 distortedPosition = vec2(uv.x + disp.r * effectFactor, uv.y);
 gl_FragColor = texture2D(texture, distortedPosition);
 ```
+
+Applying a black and white displacement map such as the one below:
+
+![black and white stripes](images/webgl-displacement.png)
+
+Would result in the effect below:
+
+![effect of displacement map](images/webgl-displacement-result.jpg)
 
 ### Where to go from here
 
