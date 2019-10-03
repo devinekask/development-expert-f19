@@ -361,6 +361,17 @@ Would result in the effect below:
 
 ![effect of displacement map](images/webgl-displacement-result.jpg)
 
+Things get even more interesting when you start animating the displacement factor from the shader. Using the [TweenLite Library](https://greensock.com/tweenlite/) you can animate the uniform value, to get an effect on hover:
+
+```javascript
+canvas.addEventListener('mouseover', () => TweenLite.to(properties, 1, { effectFactor: 0.1, ease: Power4.easeOut }));
+canvas.addEventListener('mouseout', () => TweenLite.to(properties, 1, { effectFactor: 0, ease: Power4.easeOut }));
+```
+
+On hover, you'll get the following effect:
+
+![animated displacement effect](images/webgl-displacement-hover.gif)
+
 ### Where to go from here
 
 As a final exercise on 2D webgl, try to implement the shader from https://www.shadertoy.com/view/4dXBW2 in your code. Note that there are some WebGL2 quircks in the code. Read the error messages you're getting, and try to get it working!
