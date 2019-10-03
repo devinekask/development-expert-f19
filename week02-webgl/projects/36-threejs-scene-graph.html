@@ -19,7 +19,6 @@
 </head>
 <body>
   <canvas id="c"></canvas>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
   <script>
   {
@@ -40,8 +39,6 @@
     scene.background = new THREE.Color(0x000000);
 
     const objects = [];
-
-    const gui = new dat.GUI();
 
     const init = async () => {
       // use just one sphere for everything
@@ -88,18 +85,7 @@
       moonOrbit.add(moonMesh);
       objects.push(moonMesh);
 
-      makeAxisGrid(solarSystem, 'solarSystem', 25);
-      makeAxisGrid(sunMesh, 'sunMesh');
-      makeAxisGrid(earthOrbit, 'earthOrbit');
-      makeAxisGrid(earthMesh, 'earthMesh');
-      makeAxisGrid(moonMesh, 'moonMesh');
-
       requestAnimationFrame(render);
-    };
-
-    const makeAxisGrid = (node, label, units) => {
-      const helper = new AxisGridHelper(node, units);
-      gui.add(helper, 'visible').name(label);
     };
 
     const render = (time) => {
@@ -130,37 +116,6 @@
         renderer.setSize(width, height, false);
       }
       return needResize;
-    }
-
-    // Turns both axes and grid visible on/off
-    // dat.GUI requires a property that returns a bool
-    // to decide to make a checkbox so we make a setter
-    // and getter for `visible` which we can tell dat.GUI
-    // to look at.
-    class AxisGridHelper {
-      constructor(node, units = 10) {
-        const axes = new THREE.AxesHelper();
-        axes.material.depthTest = false;
-        axes.renderOrder = 2;  // after the grid
-        node.add(axes);
-    
-        const grid = new THREE.GridHelper(units, units);
-        grid.material.depthTest = false;
-        grid.renderOrder = 1;
-        node.add(grid);
-    
-        this.grid = grid;
-        this.axes = axes;
-        this.visible = false;
-      }
-      get visible() {
-        return this._visible;
-      }
-      set visible(v) {
-        this._visible = v;
-        this.grid.visible = v;
-        this.axes.visible = v;
-      }
     }
 
     init();

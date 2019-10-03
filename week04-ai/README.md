@@ -37,3 +37,12 @@ A Neural Network is built with different layers of "neurons", who are all connec
 Image Source: http://cs231n.github.io/neural-networks-1/
 
 A non-trained network will have random weights and won't give you good results. By training a network with example data, you'll tweak the weights little by little, until our network (hopefully) performs well.
+
+## ML5.js
+
+As a first step, we'll use some existing ML models in our browsers, using the [ML5.js library](https://ml5js.org/).
+
+The ML5 library is built on top of Tensorflow.js - making it a bit easier to use machine learning models in your javascript application.
+
+[Explore the demos in the ML5 reference](https://ml5js.org/reference/) to get a grasp of the capabilities of ML5. Note that the examples are using [P5.js](https://p5js.org/) as well, which is a framework for creative coding in javascript. It comes with features to easily setup a a canvas, webcam, load images, draw loop, etc... However, P5 is not a requirement for ML5, you can use ML5 with your vanilla javascript code as well.
+

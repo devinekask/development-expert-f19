@@ -334,6 +334,26 @@ if (mouseIsOverCanvas) {
 
 Test the app, the wave effect should only happen when the cursor hovers over the image.
 
+### Displacement maps
+
+Producing a visually interesting effect, using Math only, can be tricky. A trick which is often used, is usage of "displacement maps". These are grayscale images, where the intensity value can be used as a multiplier for an effect.
+
+In the fragment shader, you'll have 2 images: the image itself and a displacement texture:
+
+```csharp
+uniform sampler2D texture;
+uniform sampler2D disp;
+```
+
+The sampling position gets influenced by the intensity value of the displacement texture:
+
+```csharp
+vec2 distortedPosition = vec2(uv.x + disp.r*effectFactor, uv.y);
+gl_FragColor = texture2D(texture, distortedPosition);
+```
+
+### Where to go from here
+
 As a final exercise on 2D webgl, try to implement the shader from https://www.shadertoy.com/view/4dXBW2 in your code. Note that there are some WebGL2 quircks in the code. Read the error messages you're getting, and try to get it working!
 
 ![photo of cat with glitch effect](images/webgl-cat-glitch.gif)

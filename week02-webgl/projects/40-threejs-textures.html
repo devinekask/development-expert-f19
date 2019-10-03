@@ -51,14 +51,12 @@
     const cubes = [];
 
     const init = () => {
-      loader.load('images/wall.jpg', (texture) => {
-        const material = new THREE.MeshBasicMaterial({
-          map: texture,
-        });
-        const cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-        cubes.push(cube);  // add to our list of cubes to rotate
+      const material = new THREE.MeshBasicMaterial({
+        map: loader.load('images/wall.jpg')
       });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+      cubes.push(cube);
       requestAnimationFrame(render);
     };
 

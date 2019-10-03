@@ -26,40 +26,45 @@
     const canvas = document.querySelector('#c');
     const renderer = new THREE.WebGLRenderer({canvas});
 
-    const fov = 40;
+    const loadManager = new THREE.LoadingManager();
+    const loader = new THREE.TextureLoader(loadManager);
+
+    const fov = 75;
     const aspect = 2;  // the canvas default
     const near = 0.1;
-    const far = 1000;
+    const far = 5;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 50, 0);
-    camera.up.set(0, 0, 1);
-    camera.lookAt(0, 0, 0);
+    camera.position.z = 2;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
 
-    const objects = [];
+    const color = 0xFFFFFF;
+    const intensity = 1;
+    const light = new THREE.DirectionalLight(color, intensity);
+    light.position.set(-1, 2, 4);
+    scene.add(light);
 
-    const init = async () => {
-      // use just one sphere for everything
-      const radius = 1;
-      const widthSegments = 6;
-      const heightSegments = 6;
-      const sphereGeometry = new THREE.SphereBufferGeometry(
-          radius, widthSegments, heightSegments);
-      
-      const sunMaterial = new THREE.MeshPhongMaterial({emissive: 0xFFFF00});
-      const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
-      sunMesh.scale.set(5, 5, 5);  // make the sun large
-      scene.add(sunMesh);
-      objects.push(sunMesh);
+    const boxWidth = 1;
+    const boxHeight = 1;
+    const boxDepth = 1;
+    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
 
-      {
-        const color = 0xFFFFFF;
-        const intensity = 3;
-        const light = new THREE.PointLight(color, intensity);
-        scene.add(light);
-      }
+    const cubes = [];
+
+    const init = () => {
+      const materials = [
+        new THREE.MeshBasicMaterial({map: loader.load('images/flower-1.jpg')}),
+        new THREE.MeshBasicMaterial({map: loader.load('images/flower-2.jpg')}),
+        new THREE.MeshBasicMaterial({map: loader.load('images/flower-3.jpg')}),
+        new THREE.MeshBasicMaterial({map: loader.load('images/flower-4.jpg')}),
+        new THREE.MeshBasicMaterial({map: loader.load('images/flower-5.jpg')}),
+        new THREE.MeshBasicMaterial({map: loader.load('images/flower-6.jpg')}),
+      ];
+      loadManager.onLoad = () => {
+        const cube = new THREE.Mesh(geometry, materials);
+        scene.add(cube);
+        cubes.push(cube);  // add to our list of cubes to rotate
+      };
       requestAnimationFrame(render);
     };
 
@@ -71,9 +76,12 @@
         camera.aspect = canvas.clientWidth / canvas.clientHeight;
         camera.updateProjectionMatrix();
       }
-
-      objects.forEach((obj) => {
-        obj.rotation.y = time;
+ 
+      cubes.forEach((cube, ndx) => {
+        const speed = 1 + ndx * .1;
+        const rot = time * speed;
+        cube.rotation.x = rot;
+        cube.rotation.y = rot;
       });
     
       renderer.render(scene, camera);

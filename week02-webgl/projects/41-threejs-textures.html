@@ -26,8 +26,7 @@
     const canvas = document.querySelector('#c');
     const renderer = new THREE.WebGLRenderer({canvas});
 
-    const loadManager = new THREE.LoadingManager();
-    const loader = new THREE.TextureLoader(loadManager);
+    const loader = new THREE.TextureLoader();
 
     const fov = 75;
     const aspect = 2;  // the canvas default
@@ -60,11 +59,9 @@
         new THREE.MeshBasicMaterial({map: loader.load('images/flower-5.jpg')}),
         new THREE.MeshBasicMaterial({map: loader.load('images/flower-6.jpg')}),
       ];
-      loadManager.onLoad = () => {
-        const cube = new THREE.Mesh(geometry, materials);
-        scene.add(cube);
-        cubes.push(cube);  // add to our list of cubes to rotate
-      };
+      const cube = new THREE.Mesh(geometry, materials);
+      scene.add(cube);
+      cubes.push(cube);
       requestAnimationFrame(render);
     };
 

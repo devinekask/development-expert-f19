@@ -31,7 +31,7 @@
     const near = 0.1;
     const far = 1000;
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.set(0, 50, 0);
+    camera.position.set(0, 150, 0);
     camera.up.set(0, 0, 1);
     camera.lookAt(0, 0, 0);
 
@@ -47,15 +47,11 @@
       const heightSegments = 6;
       const sphereGeometry = new THREE.SphereBufferGeometry(
           radius, widthSegments, heightSegments);
-
-      const solarSystem = new THREE.Object3D();
-      scene.add(solarSystem);
-      objects.push(solarSystem);
       
       const sunMaterial = new THREE.MeshPhongMaterial({emissive: 0xFFFF00});
       const sunMesh = new THREE.Mesh(sphereGeometry, sunMaterial);
       sunMesh.scale.set(5, 5, 5);  // make the sun large
-      solarSystem.add(sunMesh);
+      scene.add(sunMesh);
       objects.push(sunMesh);
 
       {
@@ -65,25 +61,12 @@
         scene.add(light);
       }
 
-      const earthOrbit = new THREE.Object3D();
-      earthOrbit.position.x = 10;
-      solarSystem.add(earthOrbit);
-      objects.push(earthOrbit);
-
       const earthMaterial = new THREE.MeshPhongMaterial({color: 0x2233FF, emissive: 0x112244});
       const earthMesh = new THREE.Mesh(sphereGeometry, earthMaterial);
-      earthOrbit.add(earthMesh);
+      earthMesh.position.x = 10;
+      // scene.add(earthMesh);
+      sunMesh.add(earthMesh);
       objects.push(earthMesh);
-
-      const moonOrbit = new THREE.Object3D();
-      moonOrbit.position.x = 2;
-      earthOrbit.add(moonOrbit);
-      
-      const moonMaterial = new THREE.MeshPhongMaterial({color: 0x888888, emissive: 0x222222});
-      const moonMesh = new THREE.Mesh(sphereGeometry, moonMaterial);
-      moonMesh.scale.set(.5, .5, .5);
-      moonOrbit.add(moonMesh);
-      objects.push(moonMesh);
 
       requestAnimationFrame(render);
     };
