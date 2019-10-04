@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ML5</title>
+</head>
+<body>
+  <script src="https://unpkg.com/ml5@0.3.1/dist/ml5.min.js" type="text/javascript"></script>
+  <script>
+  {
+    const loadImage = src=> {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.addEventListener("load", () => resolve(img));
+        img.addEventListener("error", err => reject(err));
+        img.src = src;
+      });
+    };
+
+    const init = async () => {
+      const img = await loadImage('images/cat.jpg');
+      document.body.appendChild(img);
+      const $label = document.createElement('h2');
+      document.body.appendChild($label);
+      $label.textContent = 'Loading Mobilenet...';
+      const mobileNet = await ml5.imageClassifier('MobileNet');
+      console.log('Mobilenet loaded');
+      $label.textContent = 'Classifying Image...';
+      const results = await mobileNet.classify(img);
+      console.log(results[0].label, results[0].confidence);
+      $label.textContent = `${results[0].label} (Confidence: ${results[0].confidence})`;
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>

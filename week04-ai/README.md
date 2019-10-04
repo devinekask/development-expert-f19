@@ -46,3 +46,60 @@ The ML5 library is built on top of Tensorflow.js - making it a bit easier to use
 
 [Explore the demos in the ML5 reference](https://ml5js.org/reference/) to get a grasp of the capabilities of ML5. Note that the examples are using [P5.js](https://p5js.org/) as well, which is a framework for creative coding in javascript. It comes with features to easily setup a a canvas, webcam, load images, draw loop, etc... However, P5 is not a requirement for ML5, you can use ML5 with your vanilla javascript code as well.
 
+There are a few examples available in vanilla javascript as well on [the ml5-examples repo](https://github.com/ml5js/ml5-examples/tree/master/javascript).
+
+### Image Classifier
+
+As a "hello ml5 world" example, we'll try using the Image Classifier. As you can [read on the ml5 imageClassifier docs](https://ml5js.org/reference/api-ImageClassifier/):
+
+> You can use neural networks to recognize the content of images. ml5.imageClassifier() is a method to create an object that classifies an image using a pre-trained model.
+>
+> It should be noted that the pre-trained model provided by the example below was trained on a database of approximately 15 million images ([ImageNet](http://www.image-net.org/)). The ml5 library accesses this model from the cloud. What the algorithm labels an image is entirely dependent on that training data -- what is included, excluded, and how those images are labeled (or mislabeled).
+
+First of all, create an HTML document, and link the ml5 library:
+
+```html
+<script src="https://unpkg.com/ml5@0.3.1/dist/ml5.min.js" type="text/javascript"></script>
+<script>
+{
+  // our code goes here
+}
+</script>
+```
+
+We'll need to load an image, the easy way to do it, is using a promise based approach with async/await:
+
+```javascript
+const loadImage = src=> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.addEventListener("load", () => resolve(img));
+    img.addEventListener("error", err => reject(err));
+    img.src = src;
+  });
+};
+
+const init = async () => {
+  const img = await loadImage('images/cat.jpg');
+  document.body.appendChild(img);
+};
+
+init();
+```
+
+Nothing new here. Let's go and add the ml5.imageClassifier, to detect what's displayed in the image.
+
+On the [ml5.imageClassfier docs page](https://ml5js.org/reference/api-ImageClassifier/) you'll read that you can create an instance of the imageClassifier, using `ml5.imageClassifier(model)`. Read about the different parameters on that page - especially the part about the optional callback.
+
+We will used the promise based approach, and "await" for the model to be loaded:
+
+```javascript
+const mobileNet = await ml5.imageClassifier('MobileNet');
+console.log('Mobilenet loaded');
+```
+
+Run the app, and check the network panel. You'll notice that there's a bunch of extra network requests, which have to do with loading the model. Once the model is fully loaded, you should see the "Mobilenet loaded" message in your console.
+
+Now the final part: detect the contents of the image. [Read about the classify method and all it's options on the ml5 docs](https://ml5js.org/reference/api-ImageClassifier/) and try implementing it, using the async/await syntax. Show the result on the page, underneath the image:
+
+![classified photo of a cat](images/ml5-classified-photo.jpg)
