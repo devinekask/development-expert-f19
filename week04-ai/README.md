@@ -103,3 +103,33 @@ Run the app, and check the network panel. You'll notice that there's a bunch of 
 Now the final part: detect the contents of the image. [Read about the classify method and all it's options on the ml5 docs](https://ml5js.org/reference/api-ImageClassifier/) and try implementing it, using the async/await syntax. Show the result on the page, underneath the image:
 
 ![classified photo of a cat](images/ml5-classified-photo.jpg)
+
+#### Video Classifier
+
+When you read  [ml5.imageClassfier docs](https://ml5js.org/reference/api-ImageClassifier/) - you stumbled upon the "video" option: you can pass in a video element when creating the imageClassifier, and do image classification on live video.
+
+1. Create a new html document, and load the ml5 library
+2. Display your webcam video feed on the page.
+3. Create an imageClassifier instance. Store it in a global variable, and pass in a reference to your video element:
+
+```javascript
+mobileNet = await ml5.imageClassifier('MobileNet', $video);
+```
+
+4. Create a separete `loop()` function where you place the `classify()` logic. At the end of that `loop()` function, call `loop()` again, so it keeps classifying:
+
+```javascript
+const loop = async () => {
+  const results = await mobileNet.classify($video);
+  $label.textContent = `${results[0].label} (Confidence: ${results[0].confidence})`;
+  loop();
+};
+```
+
+Test the app. You'll get mixed results, depending on if the video is showing something in the ImageNet dataset or not. You'll notice a "low" confidence value when classifying something not quite in the dataset (it guesses I am a mask):
+
+[classified me as a mask with low confidence](ml5-classified-video-bad.jpg)
+
+But when showing an image of something in the ImageNet dataset, the confidence is higher (and the classification is more correct:
+
+[classified a coffee mug with high confidence](ml5-classified-video-good.jpg)
