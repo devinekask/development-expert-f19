@@ -48,6 +48,8 @@ The ML5 library is built on top of Tensorflow.js - making it a bit easier to use
 
 There are a few examples available in vanilla javascript as well on [the ml5-examples repo](https://github.com/ml5js/ml5-examples/tree/master/javascript).
 
+A lot of the things we're doing in the course, is based on the [Beginners Guide to Machine Learning in Javascript](https://www.youtube.com/playlist?list=PLRqwX-V7Uu6YPSwT06y_AEYTqIwbeam3y) from [Daniel Shiffman / The Coding Train](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw). Make sure to watch that particular playlist for a step-by-step, more in-depth explanation of some of the ML5 apps we're building.
+
 ### Image Classifier
 
 As a "hello ml5 world" example, we'll try using the Image Classifier. As you can [read on the ml5 imageClassifier docs](https://ml5js.org/reference/api-ImageClassifier/):
