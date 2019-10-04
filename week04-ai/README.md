@@ -2,6 +2,7 @@
 
 ## Things to do before class
 
+- Install [Docker](https://download.docker.com/mac/stable/Docker.dmg) and [RunwayML](https://runwayml.com/) 
 - Watch https://www.youtube.com/watch?v=LvIa0-ZKCrc&list=PLRqwX-V7Uu6bCN8LKrcMa6zF4FPtXyXYj (first 16 minutes)
 
 ## Intro
@@ -48,7 +49,7 @@ The ML5 library is built on top of Tensorflow.js - making it a bit easier to use
 
 There are a few examples available in vanilla javascript as well on [the ml5-examples repo](https://github.com/ml5js/ml5-examples/tree/master/javascript).
 
-A lot of the things we're doing in the course, is based on the [Beginners Guide to Machine Learning in Javascript](https://www.youtube.com/playlist?list=PLRqwX-V7Uu6YPSwT06y_AEYTqIwbeam3y) from [Daniel Shiffman / The Coding Train](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw). Make sure to watch that particular playlist for a step-by-step, more in-depth explanation of some of the ML5 apps we're building.
+A lot of the things we're doing in the course, is based on the [Beginners Guide to Machine Learning in Javascript](https://www.youtube.com/playlist?list=PLRqwX-V7Uu6YPSwT06y_AEYTqIwbeam3y) from [Daniel Shiffman / The Coding Train 🚂](https://www.youtube.com/channel/UCvjgXvBlbQiydffZU7m1_aw). Make sure to watch that particular playlist for a step-by-step, more in-depth explanation of some of the ML5 apps we're building.
 
 ### Image Classifier
 
@@ -135,3 +136,68 @@ Test the app. You'll get mixed results, depending on if the video is showing som
 But when showing an image of something in the ImageNet dataset, the confidence is higher (and the classification is more correct:
 
 ![classified a coffee mug with high confidence](images/ml5-classified-video-good.jpg)
+
+### Transfer Learning
+
+In a next experiment, we'll use "Transfer Learning" to inject our own, custom training samples in the ImageNet model, and get it to recognize "new" classes of images. A live example of the possibilities of Transfer Learning is [Google's Teachable Machine](https://teachablemachine.withgoogle.com). Play around with this online app to familiarize yourself of the capabilities of this technique.
+
+[We'll use the ml5 featureExtractor](https://ml5js.org/reference/api-FeatureExtractor/) to apply Transfer Learning in our app.
+
+1. Create a new html document, and load the ml5 library
+2. Display your webcam video feed on the page.
+3. Initialize the featureExtractor:
+
+```javascript
+mobileNet = await ml5.featureExtractor('MobileNet');
+```
+
+4. ... and create a classifier, passing in a reference to the video tag:
+
+```javascript
+classifier = mobileNet.classification($video);
+```
+
+5. Add 3 buttons to the page: a button to classify an image as class "one", a button to classify an image as class "two" and a button to start training. Note that we've specified the classification label as a data attribute `data-label`:
+
+```html
+<button id="button1" data-label="one">One</button>
+<button id="button2" data-label="two">Two</button>
+<button id="trainButton">Train</button>
+```
+
+6. Add a click event listener to button1 and button2. The event handler adds a sample to the classifier:
+
+```javascript
+const buttonClickHandler = e => {
+  const $button = e.currentTarget;
+  const label = $button.dataset.label;
+  classifier.addImage(label);
+};
+```
+
+7. Add a click event listener to the training button, in it's event handler you kick off the training process, passing in a progress callback:
+
+```javascript
+const trainClickHandler = e => {
+  classifier.train(whileTraining);
+};
+
+const whileTraining = (loss) => {
+  if (loss === null) {
+    console.log('Training Complete');
+  } else {
+    console.log(`Training (loss: ${loss})`);
+  }
+};
+```
+
+8. When training is complete (inside the `whileTraining` function, when loss is equal to null), you can start the same `loop()` logic as in the previous exercise.
+
+Launch the app, and add samples for classification one and classification two. For example: in samples for classification one you are in the frame, and classification two you are outside of the frame. Add at least 15 samples for each scenario, and make sure to move around the frame (when you are in the frame...) to get sufficient different samples. After training, the app should be pretty confident about each scenario.
+
+![classifying between an empty video or a teddybear](images/ml5-transfer-learning-classification.gif)
+
+Try expanding this application:
+
+- Trigger different sounds, based on the classification
+- Replace keyboard input with this classifier to control an arcade game
