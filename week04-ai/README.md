@@ -128,8 +128,8 @@ const loop = async () => {
 
 Test the app. You'll get mixed results, depending on if the video is showing something in the ImageNet dataset or not. You'll notice a "low" confidence value when classifying something not quite in the dataset (it guesses I am a mask):
 
-[classified me as a mask with low confidence](images/ml5-classified-video-bad.jpg)
+![classified me as a mask with low confidence](images/ml5-classified-video-bad.jpg)
 
 But when showing an image of something in the ImageNet dataset, the confidence is higher (and the classification is more correct:
 
-[classified a coffee mug with high confidence](images/ml5-classified-video-good.jpg)
+![classified a coffee mug with high confidence](images/ml5-classified-video-good.jpg)
