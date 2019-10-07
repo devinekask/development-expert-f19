@@ -262,3 +262,76 @@ Try to expand on this technique:
 
 - Map the position of a rectangle to the value
 - Explore [Tone.js](https://tonejs.github.io) and see how you can map a frequency to the regression value
+
+### KNN Classification
+
+K-Nearest-Neighbour classification is a way to label data, based on the "distance" of that data to known, labeled data.
+
+![KNN in 2d space: mapping mouse coordinates to a class](images/knn.gif)
+
+In the GIF above you can see 2-dimensional data (x and y positions) being mapped to known data, based on the Euclidean distance. You can [test a live version of this at the "How to build a Teachable Machine with TensorFlow.js" page (https://observablehq.com/@nsthorat/how-to-build-a-teachable-machine-with-tensorflow-js#-o-0-nearest-neighbors).
+
+Using this teachnique, we can map K-dimensional data to their nearest neighbors. Us humans have a difficulty understanding more than 3 or 4 dimensions. However, the math to calculate the distance and the logic to map an unknown datapoint to a class remains the same.
+
+The advantage here is that we won't need a separate training step and can classify (image) data in real time. We can tweak the model while it is running.
+
+Our app will be similar to the previous classification app, except we won't have a training step. So, create a basic app, showing your webcam video stream and 2 buttons we'll press to classify the image:
+
+```html
+<body>
+  <video id="video" autoplay width="320" height="240"></video>
+  <h2 id="label">Loading Webcam...</h2>
+  <div>
+    <button id="button1" data-label="one">One</button>
+    <button id="button2" data-label="two">Two</button>
+  </div>
+</body>
+```
+
+We'll even create the same featureExtraction as in the previous app. However, after initializing it, we'll create a KNNClassifier, instead of a featureExtractor.classification:
+
+```javascript
+featureExtractor = await ml5.featureExtractor('MobileNet').ready;
+// classifier = featureExtractor.classification($video);
+knn = ml5.KNNClassifier();
+```
+
+Every time we press one of the classification buttons, we'll add the feature data of the current webcam image to the knn classifier. Note that this is not the full RGB data, but a reduced set of image "features" created by the feature extractor.
+
+First of all, it's interesting to see this feature data:
+
+```javascript
+// in the button click handler
+const logits = featureExtractor.infer($video);
+logits.print();
+```
+
+You'll see a "Tensor" being logged in your console:
+
+```json
+Tensor
+     [[0, 0.275391, 1.4118662, ..., 0.0468513, 0.2281258, 0.1108307],]
+```
+
+This Tensor is an internal data structure from [Tensorflow.js](https://www.tensorflow.org/js), the framework ml5.js uses internally.
+
+Now, you'll add this Tensor to the classifier:
+
+```javascript
+knn.addExample(logits, label);
+```
+
+We'll also setup a loop, where you'll be classifying the image continuously:
+
+```javascript
+const loop = async () => {
+  if (knn.getNumLabels() > 0) {
+    const logits = featureExtractor.infer($video);
+    const classification = await knn.classify(logits);
+    console.log(classification.label);
+  }
+  requestAnimationFrame(loop);
+};
+```
+
+Run the app, and classify your two scenarios. You should be able to add examples while running, and see the model improve in real time.
