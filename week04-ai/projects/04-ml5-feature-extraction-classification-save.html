@@ -27,15 +27,15 @@
     const $trainButton = document.getElementById('trainButton');
     const $saveButton = document.getElementById('saveButton');
 
-    let mobileNet, classifier;
+    let featureExtractor, classifier;
 
     const init = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       $video.srcObject = stream;
       $label.textContent = 'Loading Mobilenet...';
-      mobileNet = await ml5.featureExtractor('MobileNet');
+      featureExtractor = await ml5.featureExtractor('MobileNet').ready;
       $label.textContent = 'Click to label image snapshot';
-      classifier = mobileNet.classification($video);
+      classifier = featureExtractor.classification($video);
       $button1.addEventListener('click', buttonClickHandler);
       $button2.addEventListener('click', buttonClickHandler);
       $trainButton.addEventListener('click', trainClickHandler);
@@ -66,7 +66,7 @@
     };
 
     const loop = async () => {
-      const results = await mobileNet.classify($video);
+      const results = await classifier.classify($video);
       $label.textContent = `${results[0].label} (Confidence: ${results[0].confidence})`;
       loop();
     };

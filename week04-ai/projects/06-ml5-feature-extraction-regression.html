@@ -25,14 +25,14 @@
     const $labelButton = document.getElementById('labelButton');
     const $trainButton = document.getElementById('trainButton');
 
-    let mobileNet, regressor;
+    let featureExtractor, regressor;
 
     const init = async () => {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       $video.srcObject = stream;
       $label.textContent = 'Loading Mobilenet...';
-      mobileNet = await ml5.featureExtractor('MobileNet');
-      regressor = mobileNet.regression($video);
+      featureExtractor = await ml5.featureExtractor('MobileNet').ready;
+      regressor = featureExtractor.regression($video);
       $labelButton.addEventListener('click', labelClickHandler);
       $trainButton.addEventListener('click', trainClickHandler);
       $label.textContent = 'Add samples';

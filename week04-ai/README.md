@@ -97,7 +97,7 @@ On the [ml5.imageClassfier docs page](https://ml5js.org/reference/api-ImageClass
 We will used the promise based approach, and "await" for the model to be loaded:
 
 ```javascript
-const mobileNet = await ml5.imageClassifier('MobileNet');
+const classifier = await ml5.imageClassifier('MobileNet');
 console.log('Mobilenet loaded');
 ```
 
@@ -116,14 +116,14 @@ When you read  [ml5.imageClassfier docs](https://ml5js.org/reference/api-ImageCl
 3. Create an imageClassifier instance. Store it in a global variable, and pass in a reference to your video element:
 
 ```javascript
-mobileNet = await ml5.imageClassifier('MobileNet', $video);
+classifier = await ml5.imageClassifier('MobileNet', $video);
 ```
 
 4. Create a separete `loop()` function where you place the `classify()` logic. At the end of that `loop()` function, call `loop()` again, so it keeps classifying:
 
 ```javascript
 const loop = async () => {
-  const results = await mobileNet.classify($video);
+  const results = await classifier.classify($video);
   $label.textContent = `${results[0].label} (Confidence: ${results[0].confidence})`;
   loop();
 };
@@ -145,16 +145,16 @@ In a next experiment, we'll use "Transfer Learning" to inject our own, custom tr
 
 1. Create a new html document, and load the ml5 library
 2. Display your webcam video feed on the page.
-3. Initialize the featureExtractor:
+3. Initialize the featureExtractor (note that you need to add the .ready property, which contains the promise):
 
 ```javascript
-mobileNet = await ml5.featureExtractor('MobileNet');
+featureExtractor = await ml5.featureExtractor('MobileNet').ready;
 ```
 
 4. ... and create a classifier, passing in a reference to the video tag:
 
 ```javascript
-classifier = mobileNet.classification($video);
+classifier = featureExtractor.classification($video);
 ```
 
 5. Add 3 buttons to the page: a button to classify an image as class "one", a button to classify an image as class "two" and a button to start training. Note that we've specified the classification label as a data attribute `data-label`:

@@ -25,10 +25,10 @@
       const $label = document.createElement('h2');
       document.body.appendChild($label);
       $label.textContent = 'Loading Mobilenet...';
-      const mobileNet = await ml5.imageClassifier('MobileNet');
+      const classifier = await ml5.imageClassifier('MobileNet');
       console.log('Mobilenet loaded');
       $label.textContent = 'Classifying Image...';
-      const results = await mobileNet.classify(img);
+      const results = await classifier.classify(img);
       console.log(results[0].label, results[0].confidence);
       $label.textContent = `${results[0].label} (Confidence: ${results[0].confidence})`;
     };
