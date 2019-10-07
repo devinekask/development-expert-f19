@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mobilenet</title>
+</head>
+<body>
+  <video id="video" autoplay width="320" height="240"></video>
+  <h2 id="label">Loading Webcam...</h2>
+  <div>
+    <button id="button1" data-label="one">One</button>
+    <button id="button2" data-label="two">Two</button>
+  </div>
+
+  <script src="https://unpkg.com/ml5@0.3.1/dist/ml5.min.js" type="text/javascript"></script>
+  <script>
+
+    const $video = document.getElementById('video');
+    const $label = document.getElementById('label');
+    const $button1 = document.getElementById('button1');
+    const $button2 = document.getElementById('button2');
+
+    let featureExtractor, knn;
+
+    const init = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      $video.srcObject = stream;
+      $label.textContent = 'Loading Mobilenet...';
+      featureExtractor = await ml5.featureExtractor('MobileNet').ready;
+      knn = ml5.KNNClassifier();
+      await knn.load('models/ml5-knn-classification-save.json');
+      $label.textContent = 'Waiting for samples...';
+      $button1.addEventListener('click', buttonClickHandler);
+      $button2.addEventListener('click', buttonClickHandler);
+      loop();
+    };
+
+    const buttonClickHandler = e => {
+      const $button = e.currentTarget;
+      const label = $button.dataset.label;
+      const logits = featureExtractor.infer($video);
+      knn.addExample(logits, label);
+      logits.print();
+    };
+
+    const loop = async () => {
+      if (knn.getNumLabels() > 0) {
+        const logits = featureExtractor.infer($video);
+        const classification = await knn.classify(logits);
+        $label.textContent = classification.label;
+      }
+      requestAnimationFrame(loop);
+    };
+
+    init();
+
+  </script>
+</body>
+</html>

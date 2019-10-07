@@ -335,3 +335,17 @@ const loop = async () => {
 ```
 
 Run the app, and classify your two scenarios. You should be able to add examples while running, and see the model improve in real time.
+
+#### Save - Load KNN
+
+Just like before, you can save the model state and load it again, so you don't need to retrain all of the time:
+
+```javascript
+// saving the knn model state
+knn.save()
+```
+
+```javascript
+// loading the knn model state
+knn.load('models/ml5-knn-classification-save.json')
+```
