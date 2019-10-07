@@ -201,3 +201,42 @@ Try expanding this application:
 
 - Trigger different sounds, based on the classification
 - Replace keyboard input with this classifier to control an arcade game
+
+#### Transfer Learning - Regression
+
+Instead of doing classification, we can also use transfer learning to do regression: calculate a single, numerical value based on an input.
+
+1. Remove the 2 buttons from the page. Instead, you'll add a slider and a button to add a sample:
+
+```html
+<input id="slider" type="range" min="0" max="1" value="0.5" step="0.1" />
+<button id="labelButton">Label</button>
+```
+
+2. Create a regressor instead of a classifier:
+
+```javascript
+regressor = mobileNet.regression($video);
+```
+
+3. Every time you click the labelButton, you'll add a sample to the regressor. This will tell the regressor to what numerical value the video currently corresponds:
+
+```javascript
+const labelClickHandler = e => {
+  regressor.addImage(parseFloat($slider.value));
+};
+```
+
+4. The results structure is a bit different, as we don't have multiple classification labels anymore. Update the `loop()` function to show this value:
+
+```javascript
+const results = await regressor.predict($video);
+$label.textContent = `${results.value})`;
+```
+
+![mapping a video to a linear value](images/ml5-feature-extraction-regression.gif)
+
+Try to expand on this technique:
+
+- Map the position of a rectangle to the value
+- Explore [Tone.js](https://tonejs.github.io) and see how you can map a frequency to the regression value
