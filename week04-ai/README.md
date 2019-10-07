@@ -197,6 +197,28 @@ Launch the app, and add samples for classification one and classification two. F
 
 ![classifying between an empty video or a teddybear](images/ml5-transfer-learning-classification.gif)
 
+#### Saving / Loading the model state
+
+Having to retrain the model every time you launch the application isn't really practical. Luckely, you can save the state of the model once it's trained, and load that saved state when the application launches.
+
+Add a button to save the model, and link an event handler to the `click` event:
+
+```javascript
+const saveClickHandler = e => {
+  classifier.save();
+};
+```
+
+Once the model is trained, click this save button, which will offer you to download a json file and a weights.bin file.
+
+If you want to use this trained model in your app, it's as simple as calling the `classifier.load` method, passing in the path to the json file. You can do this at startup, right after the classifier is instantiated:
+
+```javascript
+await classifier.load('models/hotdog-teddy-classifier/model.json');
+```
+
+#### Things to do
+
 Try expanding this application:
 
 - Trigger different sounds, based on the classification

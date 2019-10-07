@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mobilenet</title>
+</head>
+<body>
+  <video id="video" autoplay width="320" height="240"></video>
+  <h2 id="label">Loading Webcam...</h2>
+  <div>
+    <button id="button1" data-label="hotdog">Hotdog</button>
+    <button id="button2" data-label="not hotdog">Not Hotdog</button>
+  </div>
+  <div>
+      <button id="trainButton">Train</button>
+      <button id="saveButton">Save</button>
+  </div>
+  <script src="https://unpkg.com/ml5@0.3.1/dist/ml5.min.js" type="text/javascript"></script>
+  <script>
+
+    const $video = document.getElementById('video');
+    const $label = document.getElementById('label');
+    const $button1 = document.getElementById('button1');
+    const $button2 = document.getElementById('button2');
+    const $trainButton = document.getElementById('trainButton');
+    const $saveButton = document.getElementById('saveButton');
+
+    let mobileNet, classifier;
+
+    const init = async () => {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      $video.srcObject = stream;
+      $label.textContent = 'Loading Mobilenet...';
+      mobileNet = await ml5.featureExtractor('MobileNet');
+      $label.textContent = 'Click to label image snapshot';
+      classifier = mobileNet.classification($video);
+      $button1.addEventListener('click', buttonClickHandler);
+      $button2.addEventListener('click', buttonClickHandler);
+      $trainButton.addEventListener('click', trainClickHandler);
+      $saveButton.addEventListener('click', saveClickHandler);
+    };
+
+    const buttonClickHandler = e => {
+      const $button = e.currentTarget;
+      const label = $button.dataset.label;
+      classifier.addImage(label);
+    };
+
+    const saveClickHandler = e => {
+      classifier.save();
+    };
+
+    const trainClickHandler = e => {
+      classifier.train(whileTraining);
+    };
+
+    const whileTraining = (loss) => {
+      if (loss === null) {
+        $label.textContent = 'Training Complete';
+        loop();
+      } else {
+        $label.textContent = `Training (loss: ${loss})`;
+      }
+    };
+
+    const loop = async () => {
+      const results = await mobileNet.classify($video);
+      $label.textContent = `${results[0].label} (Confidence: ${results[0].confidence})`;
+      loop();
+    };
+
+    init();
+
+  </script>
+</body>
+</html>
