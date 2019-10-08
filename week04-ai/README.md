@@ -369,3 +369,52 @@ As a first example, we'll use the Face-Landmarks model.
 ![preview of face landmarks - detect features on images of faces](images/runway-face-landmarks-tile.jpg)
 
 This model enables you to detect face features (eyebrows, eyes, nose, mouth, ...). It's possible to run it on your local CPU, so you don't have to spend any cloud credits.
+
+Get the model up and running within the RunwayML interface and explore it's configuration options.
+
+#### HTTP Fetch
+
+RunwayML runs socket and HTTP endpoints, so you can talk to RunwayML from external apps. As a first, quick test, we'll call the HTTP endpoint from Javascript, as most of the code can be copy pasted from within RunwayML 😎
+
+Create a new HTML file, and add a canvas and a script tag:
+
+```html
+<canvas id="c"></canvas>
+<script>
+</script>
+```
+
+Store the canvas and a 2d drawing context in a global variable:
+
+```javascript
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+```
+
+Open the Network tab in runway, and select Javascript. At the bottom, you'll see the code to fetch the data of the currently running model:
+
+![Screenshot of code to get model output](images/runway-screenshot-http-output.png)
+
+Copy that fetch code over, and log the points and labels:
+
+```javascript
+console.log(points, labels);
+```
+
+You should see a list of 72 points and labels in your console. The points are x/y pairs of relative values (values between 0 and 1):
+
+```javascript
+[[0.38666666666666666,0.4225],[0.39,0.4875],[0.395,0.55],[0.405,0.615],[0.4216666666666667,0.6725],[0.44666666666666666,0.72],[0.4816666666666667,0.7575],[0.5166666666666667,0.7875],[0.5566666666666666,0.7975],[0.5933333333333334,0.785],[0.6266666666666667,0.7525],[0.655,0.71],[0.6766666666666666,0.66],[0.69,0.6025],[0.6966666666666667,0.54],
+// etc...
+]
+```
+
+Use [`ctx.fillRect(...)`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/fillRect) to draw squares on the canvas. Make sure to multiply the relative point values by the canvas size to map them to canvas space...
+
+```javascript
+point[0] * canvas.width
+```
+
+Every time you refresh the page, you should see a simple visualization of the points coming from RunwayML:
+
+![face landmarks on canvas](images/runway-face-landmarks-canvas.png)

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>RunwayML</title>
+</head>
+<body>
+  <canvas id="c"></canvas>
+  <script>
+  {
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    fetch('http://localhost:8000/data')
+      .then(response => response.json())
+      .then(outputs => {
+        const { points, labels } = outputs;
+        console.log(JSON.stringify(points));
+        if (points) {
+          points.forEach(point => {
+            ctx.fillRect(point[0] * canvas.width, point[1] * canvas.height, 5, 5);
+          });
+        }
+      });
+  }
+  </script>
+</body>
+</html>
