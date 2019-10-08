@@ -3,6 +3,10 @@
 ## Things to do before class
 
 - Install [Docker](https://download.docker.com/mac/stable/Docker.dmg) and [RunwayML](https://runwayml.com/) 
+- Launch Runway, add the "Face Landmarks" model to your workspace AND download the model for CPU. You can find this option in the sidebar on the bottom right, when you've added it to your workspace:
+
+![Screenshot download locally](images/runway-screenshot-download-locally.png)
+
 - Watch https://www.youtube.com/watch?v=LvIa0-ZKCrc&list=PLRqwX-V7Uu6bCN8LKrcMa6zF4FPtXyXYj (first 16 minutes)
 
 ## Intro
@@ -349,3 +353,19 @@ knn.save()
 // loading the knn model state
 knn.load('models/ml5-knn-classification-save.json')
 ```
+
+## RunwayML
+
+[RunwayML](https://runwayml.com/) is an application which makes working with Machine Learning models a lot easier for creators. Instead of going through the work of configuring and installing a model on your machine (including all it's dependencies), it runs models in docker containers, locally or in the cloud. You can easely explore a model's capability using an intuitive desktop application, which even provides options to link models together.
+
+Once you've familiarized yourself with a model, you can talk to the RunwayML application using sockets or http requests. This way you can write your own visual layer, which talks to the model through Runway behind the scenes.
+
+Some models only run on the GPU, others support running them on your CPU. At this time, running GPU models locally (on your local docker install) only works on Linux with nvidea GPUs. Fear not if you don't have that configuration: there's also an option to run those models on a cloud GPU. You do need to pay for that usage though, and there's an additional delay communicating with that cloud GPU.
+
+### Face-Landmarks
+
+As a first example, we'll use the Face-Landmarks model.
+
+![preview of face landmarks - detect features on images of faces](images/runway-face-landmarks-tile.jpg)
+
+This model enables you to detect face features (eyebrows, eyes, nose, mouth, ...). It's possible to run it on your local CPU, so you don't have to spend any cloud credits.
