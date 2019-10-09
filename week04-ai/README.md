@@ -379,7 +379,7 @@ RunwayML runs socket and HTTP endpoints, so you can talk to RunwayML from extern
 Create a new HTML file, and add a canvas and a script tag:
 
 ```html
-<canvas id="c"></canvas>
+<canvas id="c" width="640" height="480"></canvas>
 <script>
 </script>
 ```
@@ -418,3 +418,28 @@ point[0] * canvas.width
 Every time you refresh the page, you should see a simple visualization of the points coming from RunwayML:
 
 ![face landmarks on canvas](images/runway-face-landmarks-canvas.png)
+
+#### Socket.io
+
+Polling the server through fetches isn't ideal. Luckely, RunwayML also runs a socket server we can connect to. This way we can get updates as they arrive.
+
+If you click on "Socket.io" in the Runway Network tab, you'll see the Server address being `http://localhost:3000`. It also specifies the events the Socket server understands / emits. The event we'll use is the 'data' event, which will contain the points and labels.
+
+Load socket.io in your html file, and create a connection to the RunwayML socket server:
+
+```javascript
+const socket = io.connect(`http://localhost:3000`);
+```
+
+Listen for the 'data' event on the socket, and add the render logic again to show the points on the canvas:
+
+```javascript
+socket.on('data', outputs => {
+  const { points, labels } = outputs;
+  // here be rendering code
+});
+```
+
+When running the app, you should see the face points move as they get automatically pushed over the websocket connection:
+
+![animated face landmarks in canvas](images/runway-face-landmarks-socket.gif)

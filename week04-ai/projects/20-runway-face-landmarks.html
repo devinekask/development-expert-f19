@@ -7,7 +7,7 @@
   <title>RunwayML</title>
 </head>
 <body>
-  <canvas id="c"></canvas>
+  <canvas id="c" width="640" height="480"></canvas>
   <script>
   {
     const canvas = document.getElementById('c');
@@ -17,7 +17,6 @@
       .then(response => response.json())
       .then(outputs => {
         const { points, labels } = outputs;
-        console.log(JSON.stringify(points));
         if (points) {
           points.forEach(point => {
             ctx.fillRect(point[0] * canvas.width, point[1] * canvas.height, 5, 5);

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>RunwayML</title>
+</head>
+<body>
+  <canvas id="c" width="640" height="480"></canvas>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+  <script>
+  {
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    const socket = io.connect(`http://localhost:3000`);
+
+    socket.on('data', outputs => {
+      const { points, labels } = outputs;
+      if (points) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        points.forEach(point => {
+          ctx.fillRect(point[0] * canvas.width, point[1] * canvas.height, 5, 5);
+        });
+      }
+    });
+
+  }
+  </script>
+</body>
+</html>
