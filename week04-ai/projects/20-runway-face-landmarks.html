@@ -10,8 +10,8 @@
   <canvas id="c" width="640" height="480"></canvas>
   <script>
   {
-    const canvas = document.getElementById('c');
-    const ctx = canvas.getContext('2d');
+    const $canvas = document.getElementById('c');
+    const ctx = $canvas.getContext('2d');
 
     fetch('http://localhost:8000/data')
       .then(response => response.json())
@@ -19,7 +19,7 @@
         const { points, labels } = outputs;
         if (points) {
           points.forEach(point => {
-            ctx.fillRect(point[0] * canvas.width, point[1] * canvas.height, 5, 5);
+            ctx.fillRect(point[0] * $canvas.width, point[1] * $canvas.height, 5, 5);
           });
         }
       });

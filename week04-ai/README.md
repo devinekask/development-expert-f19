@@ -443,3 +443,94 @@ socket.on('data', outputs => {
 When running the app, you should see the face points move as they get automatically pushed over the websocket connection:
 
 ![animated face landmarks in canvas](images/runway-face-landmarks-socket.gif)
+
+#### Creating a face cutout
+
+The Face Landmarks data contains both coordinates and labels: you can combine this data to access a specific coordinate (e.g. get the position of a coordinate of the chin...).
+
+We'll use this to create a cutout of the face, which you can integrate in another image.
+
+First of all, let's combine the two arrays in the input data:
+
+```javascript
+if (outputs && outputs.labels && outputs.labels.length > 0) {
+  const face = {};
+  outputs.labels.forEach((label, index) => face[label] = outputs.points[index]);
+  console.log(face);
+}
+```
+
+The `face` object is now a key-value combination of the label (e.g. chin_0) with the corresponding coordinate (e.g [0.54, 0.66]).
+
+```javascript
+{
+  "chin_0":[0.3933333333333333,0.16],
+  "chin_1":[0.39166666666666666,0.1975],
+  "chin_2":[0.39,0.2425],
+  "chin_3":[0.39166666666666666,0.29],
+  "chin_4":[0.3983333333333333,0.3375],
+  "chin_5":[0.4116666666666667,0.3825],
+  "chin_6":[0.435,0.4125],
+  "chin_7":[0.465,0.4325],
+  "chin_8":[0.5,0.44],
+  "chin_9":[0.5383333333333333,0.44],
+  "chin_10":[0.5766666666666667,0.43],
+  "chin_11":[0.615,0.4075],
+  "chin_12":[0.6416666666666667,0.3675],
+  "chin_13":[0.6566666666666666,0.3175],
+  "chin_14":[0.665,0.2625],
+  "chin_15":[0.6716666666666666,0.205],
+  "chin_16":[0.675,0.1525],
+  "left_eyebrow_0":[0.4033333333333333,0.095],
+  "left_eyebrow_1":[0.41,0.0525],
+  "left_eyebrow_2":[0.43166666666666664,0.03],
+  "left_eyebrow_3":[0.45666666666666667,0.025],
+  "left_eyebrow_4":[0.48333333333333334,0.035],
+  // etc...
+}
+```
+
+Using this lookup object, draw an outline of the face, going from the chin coordinates, through the eyebrows:
+
+```javascript
+ctx.beginPath();
+ctx.moveTo(face.chin_0[0] * $canvas.width, face.chin_0[1] * $canvas.height);
+for (let i = 1; i < 17; i++) {
+  ctx.lineTo(face['chin_' + i][0] * $canvas.width, face['chin_' + i][1] * $canvas.height);
+}
+// TODO: write 2 loops to go through the eyebrows
+ctx.closePath();
+ctx.stroke();
+```
+
+You should end up with an outline of your face on the screen:
+
+![an outline of the face](images/runway-face-landmarks-outline.png)
+
+Let's use this as a mask for our video. Add a video tag to your page, and display the webcam feed in that video tag. Once it works, use css to hide the element; because we will draw the video in the canvas.
+
+Drawing video frames on a canvas, is as simple as using drawImage, passing in a reference to your (hidden) video tag:
+
+```javascript
+ctx.drawImage($video, 0, 0);
+```
+
+If you want to cut pixels out of the video, you can use the context `clip()` function, after you've created a shape (which we did: the face outline is a shape). Make sure to have a `ctx.save()` and `ctx.restore()` in place, otherwise you'll be clipping on top of previous clips, making the visible area smaller each render.
+
+```javascript
+ctx.save();
+
+//
+// your outline logic should be here
+//
+
+ctx.clip();
+ctx.drawImage($video, 0, 0);
+ctx.restore();
+```
+
+Test the code, you should see a masked version of your face.
+
+![cutout of face](images/runway-face-landmarks-cutout.jpg)
+
+Once you've got this up and running, try embedding it in another image?

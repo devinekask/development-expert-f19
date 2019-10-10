@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>RunwayML</title>
+</head>
+<body>
+  <canvas id="c" width="640" height="480"></canvas>
+  <video id="video" autoplay playsinline style="display: none;"></video>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" integrity="sha256-bQmrZe4yPnQrLTY+1gYylfNMBuGfnT/HKsCGX+9Xuqo=" crossorigin="anonymous"></script>
+  <script>
+  {
+    const $canvas = document.getElementById('c');
+    const ctx = $canvas.getContext('2d');
+    const $video = document.getElementById('video');
+
+    const socket = io.connect(`http://localhost:3000`);
+
+    const init = async () => {
+
+      const imgBackground = await loadImage('images/get-schwifty.jpg');
+      const imgForeground = await loadImage('images/get-schwifty-foreground.png');
+
+      const constraints = {
+        audio: false,
+        video: true
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      $video.srcObject = stream;
+
+      socket.on('data', outputs => {
+        ctx.clearRect(0, 0, $canvas.width, $canvas.height);
+
+        ctx.drawImage(imgBackground, 0, 0);
+        
+        if (outputs && outputs.labels && outputs.labels.length > 0) {
+          ctx.save();
+          const face = {};
+          outputs.labels.forEach((label, index) => face[label] = outputs.points[index]);
+          ctx.strokeStyle = 'red';
+          ctx.beginPath();
+          ctx.moveTo(face.chin_0[0] * $canvas.width, face.chin_0[1] * $canvas.height);
+          for (let i = 1; i < 17; i++) {
+            ctx.lineTo(face['chin_' + i][0] * $canvas.width, face['chin_' + i][1] * $canvas.height);
+          }
+          for (let i = 4; i > -1; i--) {
+            ctx.lineTo(face['right_eyebrow_' + i][0] * $canvas.width, face['right_eyebrow_' + i][1] * $canvas.height);
+          }
+          for (let i = 4; i > -1; i--) {
+            ctx.lineTo(face['left_eyebrow_' + i][0] * $canvas.width, face['left_eyebrow_' + i][1] * $canvas.height);
+          }
+          ctx.lineTo(face.chin_0[0] * $canvas.width, face.chin_0[1] * $canvas.height);
+          ctx.closePath();
+          ctx.clip();
+
+          ctx.drawImage($video, 0, 0);
+          ctx.restore();
+        }
+
+        ctx.drawImage(imgForeground, 0, 0);
+      });
+    };
+
+    const loadImage = src=> {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.addEventListener("load", () => resolve(img));
+        img.addEventListener("error", err => reject(err));
+        img.src = src;
+      });
+    };
+
+    init();
+
+  }
+  </script>
+</body>
+</html>
