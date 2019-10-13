@@ -594,7 +594,6 @@ You can create a base64 version of a canvas, by using the `canvas.toDataURL` met
     const bCtx = $canvasB.getContext('2d');
     
     const $btn = document.getElementById('btn');
-    const $outputImage = document.getElementById('outputImage');
   }
   </script>
 </body>
@@ -620,7 +619,7 @@ To display the base64 image from the response, you can use the base64 string as 
 
 ```javascript
 const { result } = outputs;
-  const $outputImg = document.createElement('img');
-  $outputImg.src = result;
-  document.body.appendChild($outputImg);
+const $outputImg = document.createElement('img');
+$outputImg.src = result;
+document.body.appendChild($outputImg);
 ```
