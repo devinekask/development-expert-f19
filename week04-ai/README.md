@@ -534,3 +534,93 @@ Test the code, you should see a masked version of your face.
 ![cutout of face](images/runway-face-landmarks-cutout.jpg)
 
 Once you've got this up and running, try embedding it in another image?
+
+### Sending an image to RunwayML
+
+In the previous app, you ran the webcam as input in runway, and displayed it in the browser. The input (webcam) was configured in the RunwayML desktop app.
+
+It's also possible to send a picture to Runway though an HTTP call. This way, you can create a custom interface in your own app, send an image from your app to Runway, to process it with a model and get the response back in your app. Let's test this with the Few-Shot-Face-Translation Model.
+
+This model only runs on the GPU; you'll need to run it in the Runway Cloud, unless you've got a Linux Machine with a beefy nvidia GPU.
+
+In the example javascript code, you see that it expects 2 base64 images as inputs:
+
+```javascript
+const inputs = {
+  "source": "<base 64 image>",
+  "target": "<base 64 image>"
+};
+```
+
+You can create a base64 version of a canvas, by using the `canvas.toDataURL` method. Let's create a simple html file, with two canvasses for the inputs:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Few Shot Face Translation</title>
+  <style>
+    .input-frames {
+      display: flex;
+    }
+    .input-frame__canvas {
+      width: 320px;
+      height: 240px;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h1>Input</h1>
+    <div class="input-frames">
+      <div class="input-frame">
+        <canvas id="canvasA" class="input-frame__canvas" width="640" height="480"></canvas>
+      </div>
+      <div class="input-frame">
+        <canvas id="canvasB" class="input-frame__canvas" width="640" height="480"></canvas>
+      </div>
+    </div>
+  </section>
+  <button id="btn">Process with Few Shot Face Translation</button>
+  <script>
+  {
+    const $canvasA = document.getElementById('canvasA');
+    const aCtx = $canvasA.getContext('2d');
+
+    const $canvasB = document.getElementById('canvasB');
+    const bCtx = $canvasB.getContext('2d');
+    
+    const $btn = document.getElementById('btn');
+    const $outputImage = document.getElementById('outputImage');
+  }
+  </script>
+</body>
+</html>
+```
+
+Access your webcam in the browser, setup a requestAnimationFrame loop and draw the webcam image to canvasA using the `aCtx.drawImage()` method.
+
+Add an image to your project, with a clear image of a face. Resize it to 640x480 in advance to keep things simple. Draw that image to canvasB (again using `drawImage`).
+
+Add an event listener to the button's click event. This is where you'll send the base64 encoded canvasses to RunwayML:
+
+```javascript
+const inputs = {
+  "source": $canvasA.toDataURL('image/jpeg'),
+  "target": $canvasB.toDataURL('image/jpeg')
+};
+```
+
+Make sure the Runway Model is running (it might take a couple of minutes for the model to launch on the remote GPU), and implement the javascript fetch logic to send the inputs from the browser to input.
+
+To display the base64 image from the response, you can use the base64 string as the `src` attribute on the image:
+
+```javascript
+const { result } = outputs;
+  const $outputImg = document.createElement('img');
+  $outputImg.src = result;
+  document.body.appendChild($outputImg);
+```

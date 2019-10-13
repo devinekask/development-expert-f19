@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Few Shot Face Translation</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+    .input-frames {
+      display: flex;
+    }
+    .input-frame__canvas {
+      width: 320px;
+      height: 240px;
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <h1>Input</h1>
+    <div class="input-frames">
+      <div class="input-frame">
+        <canvas id="canvasA" class="input-frame__canvas" width="640" height="480"></canvas>
+        <video id="video" class="hidden" width="640" height="480" autoplay playsinline></video>
+      </div>
+      <div class="input-frame">
+        <canvas id="canvasB" class="input-frame__canvas" width="640" height="480"></canvas>
+      </div>
+    </div>
+    <div id="output"></div>
+  </section>
+  <button id="btn">Process with Few Shot Face Translation</button>
+  <script>
+  {
+    const runwayUrl = 'http://localhost:8000/query';
+
+    const $video = document.getElementById('video');
+
+    const $canvasA = document.getElementById('canvasA');
+    const aCtx = $canvasA.getContext('2d');
+
+    const $canvasB = document.getElementById('canvasB');
+    const bCtx = $canvasB.getContext('2d');
+    
+    const $btn = document.getElementById('btn');
+    const $output = document.getElementById('output');
+
+    const init = async() => {
+      const constraints = {
+        audio: false,
+        video: true
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      $video.srcObject = stream;
+
+      $image = await loadImage('images/tom-cruise.jpg');
+      bCtx.drawImage($image, 0, 0);
+
+      draw();
+      $btn.addEventListener('click', processImage);
+    };
+
+    const draw = () => {
+      aCtx.clearRect(0, 0, $canvasA.width, $canvasA.height);
+      aCtx.drawImage($video, 0, 0);
+      requestAnimationFrame(draw);
+    };
+
+    const loadImage = src=> {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.addEventListener("load", () => resolve(img));
+        img.addEventListener("error", err => reject(err));
+        img.src = src;
+      });
+    };
+
+    const processImage = async () => {
+      const inputs = {
+        "source": $canvasA.toDataURL('image/jpeg'),
+        "target": $canvasB.toDataURL('image/jpeg')
+      };
+
+      fetch(runwayUrl, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(inputs)
+      })
+        .then(response => response.json())
+        .then(outputs => {
+          const { result } = outputs;
+          const $outputImg = document.createElement('img');
+          $outputImg.src = result;
+          $output.innerHTML = '';
+          $output.appendChild($outputImg);
+        })
+    };
+
+    init();
+  }
+  </script>
+</body>
+</html>
