@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>QuickDraw</title>
+  <style>
+  body {
+    background: #cccccc;
+  }
+  </style>
+</head>
+<body>
+  <h1>QuickDraw</h1>
+  <canvas id="c" width="400" height="400"></canvas>
+  <button id="btnReset">Clear Canvas</button>
+  <ol id="result">
+  </ol>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tensorflow/1.2.10/tf.min.js" integrity="sha256-HCgGF6GfUpPqCZc05QADRrfxnJ3UO1fqFJUZGx0U8Cc=" crossorigin="anonymous"></script>
+  <script>
+  {
+
+    const $canvas = document.getElementById("c");
+    const ctx = $canvas.getContext("2d");
+    const $btnReset = document.getElementById('btnReset');
+    const $result = document.getElementById('result');
+
+    let model, classNames, mouseIsDown = false, coords = [];
+
+    const init = async () => {
+      model = await tf.loadLayersModel('models/quickdraw/model.json');
+      classNames = (await (await fetch('models/quickdraw/class_names.txt')).text()).split("\n").filter(name => name.length > 0);
+
+      $canvas.addEventListener('mousedown', startDrawing);
+      $canvas.addEventListener('mousemove', draw);
+      window.addEventListener('mouseup', stopDrawing);
+      $btnReset.addEventListener('click', resetCanvas);
+
+      resetCanvas();
+    };
+
+    const resetCanvas = () => {
+      coords = [];
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, $canvas.width, $canvas.height);
+    };
+
+    const startDrawing = e => {
+      mouseIsDown = true;
+      ctx.save();
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+      coords.push({x: e.offsetX, y: e.offsetY});
+    };
+
+    const stopDrawing = e => {
+      if (!mouseIsDown) {
+        return;
+      }
+      mouseIsDown = false;
+      ctx.closePath();
+      ctx.restore();
+      classify();
+    };
+
+    const draw = e => {
+      if (!mouseIsDown) {
+        return;
+      }
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+      coords.push({x: e.offsetX, y: e.offsetY});
+    };
+
+    const classify = () => {
+      const bounds = getBounds();
+      const imgData = ctx.getImageData(bounds.x, bounds.y, bounds.width, bounds.height);
+      const scores = tf.tidy(()=>{
+        //convert the image data to a tensor 
+        let tensor = tf.browser.fromPixels(imgData, numChannels = 1);
+        //resize to 28 x 28 
+        const resized = tf.image.resizeBilinear(tensor, [28, 28]).toFloat();
+        // Normalize the image 
+        const offset = tf.scalar(255.0);
+        const normalized = tf.scalar(1.0).sub(resized.div(offset));
+        //We add a dimension to get a batch shape 
+        const batched = normalized.expandDims(0);
+        return model.predict(batched).dataSync();
+      });
+      
+      const predictions = Array.from(scores).map((score, index) => {
+        return {
+          name: classNames[index],
+          score
+        };
+      }).sort((a, b) => b.score - a.score);
+
+      $result.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const $li = document.createElement('li');
+        $li.textContent = `${predictions[i].name} (${Math.floor(predictions[i].score * 100)} %)`;
+        $result.appendChild($li);
+      }
+      // console.log(tf.memory().numTensors);
+    };
+
+    const getBounds = () => {
+      const xCoords = coords.map(p => p.x);
+      const yCoords = coords.map(p => p.y);
+      const minCoord = {
+        x: Math.min.apply(null, xCoords),
+        y: Math.min.apply(null, yCoords)
+      };
+      const maxCoord = {
+        x: Math.max.apply(null, xCoords),
+        y: Math.max.apply(null, yCoords)
+      };
+      return {
+        x: minCoord.x, 
+        y: minCoord.y,
+        width: maxCoord.x - minCoord.x,
+        height: maxCoord.y - minCoord.y
+      };
+    }
+
+    init();
+
+  }  
+  </script>
+</body>
+</html>
