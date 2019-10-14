@@ -43,6 +43,10 @@ Image Source: http://cs231n.github.io/neural-networks-1/
 
 A non-trained network will have random weights and won't give you good results. By training a network with example data, you'll tweak the weights little by little, until our network (hopefully) performs well.
 
+## GANs
+
+TODO: Add explanation of GANs here
+
 ## ML5.js
 
 As a first step, we'll use some existing ML models in our browsers, using the [ML5.js library](https://ml5js.org/).
@@ -535,7 +539,7 @@ Test the code, you should see a masked version of your face.
 
 Once you've got this up and running, try embedding it in another image?
 
-### Sending an image to RunwayML
+### Sending an image to RunwayML - Few-Shot-Face-Translation
 
 In the previous app, you ran the webcam as input in runway, and displayed it in the browser. The input (webcam) was configured in the RunwayML desktop app.
 
@@ -623,3 +627,13 @@ const $outputImg = document.createElement('img');
 $outputImg.src = result;
 document.body.appendChild($outputImg);
 ```
+
+## TensorflowJS
+
+- [https://www.youtube.com/watch?v=Qt3ZABW5lD0&list=PLRqwX-V7Uu6YIeVA3dNxbR9PYj4wV31oQ](Coding Traing Playlist: Introduction to TensorFlow.js - Intelligence and Learning)
+- [https://medium.com/tensorflow/a-gentle-introduction-to-tensorflow-js-dba2e5257702](Medium Post: A Gentle Introduction to TensorFlow.js)
+- [https://medium.com/tensorflow/train-on-google-colab-and-run-on-the-browser-a-case-study-8a45f9b1474e](Medium Post: Train a model in tf.keras with Colab, and run it in the browser with TensorFlow.js)
+
+## Other Resources
+
+- [https://www.youtube.com/watch?v=U_u5CuLGVSc](The Neural Aesthetic @ ITP-NYU :: 06 Generative models)
