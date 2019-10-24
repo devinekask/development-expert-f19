@@ -26,6 +26,8 @@ Learn about networking and socket communication. Build client and server side so
 
 What is AI / Machine Learning / Neural networks? How does a neural network work? Use existing models with ml5.js and RunwayML.
 
+[Continue to Week 4 - Artificial Intelligence](week04-ai/)
+
 ## Week 5 Hackathon
 
 Build an interactive experience in one week using the knowledge from the past weeks. Present your installation at a community event.
